@@ -1,0 +1,31 @@
+{
+  "buildOptions": {
+    "warningsAsErrors": true
+  },
+  "dependencies": {
+    "dotnet-test-xunit": "2.2.0-*",
+    "Microsoft.AspNetCore.JsonPatch": "1.1.0-*",
+    "Microsoft.AspNetCore.Testing": "1.1.0-*",
+    "Moq": "4.6.36-*",
+    "xunit": "2.2.0-*"
+  },
+  "testRunner": "xunit",
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "version": "1.0.0-*",
+          "type": "platform"
+        },
+        "System.Diagnostics.TraceSource": "4.0.0-*"
+      }
+    },
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Linq.Expressions": {
+          "type": "build"
+        }
+      }
+    }
+  }
+}

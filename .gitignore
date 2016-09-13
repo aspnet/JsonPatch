@@ -2,6 +2,8 @@
 [Bb]in/
 TestResults/
 .nuget/
+.build/
+.testPublish/
 *.sln.ide/
 _ReSharper.*/
 packages/
@@ -10,7 +12,6 @@ PublishProfiles/
 .vs/
 bower_components/
 node_modules/
-**/wwwroot/lib/
 debugSettings.json
 project.lock.json
 *.user
@@ -33,4 +34,5 @@ nuget.exe
 .settings
 *.sln.ide
 node_modules
-**/[Cc]ompiler/[Rr]esources/**/*.js
+*launchSettings.json
+*.orig
