@@ -1,9 +1,12 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Newtonsoft.Json;
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Microsoft.AspNetCore.JsonPatch.Helpers
 {
@@ -51,10 +54,35 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                     if (ContinueWithSubPath(memberExpression.Expression.NodeType, false))
                     {
                         var left = GetPath(memberExpression.Expression, false);
+
+                        // if there's a JsonProperty attribute, we must return the PropertyName
+                        // from the attribute rather than the member name 
+                        var jsonPropertyAttribute =
+                            memberExpression.Member.GetCustomAttributes(
+                            typeof(JsonPropertyAttribute), false);
+
+                        if (jsonPropertyAttribute.Count() > 0)
+                        {
+                            // get value
+                            var castedAttribrute = jsonPropertyAttribute.First() as JsonPropertyAttribute;
+                            return left + "/" + castedAttribrute.PropertyName;
+                        }
                         return left + "/" + memberExpression.Member.Name;
                     }
                     else
                     {
+                        // Same here: if there's a JsonProperty attribute, we must return the PropertyName
+                        // from the attribute rather than the member name 
+                        var jsonPropertyAttribute =
+                            memberExpression.Member.GetCustomAttributes(
+                            typeof(JsonPropertyAttribute), false);
+
+                        if (jsonPropertyAttribute.Count() > 0)
+                        {
+                            // get value
+                            var castedAttribrute = jsonPropertyAttribute.First() as JsonPropertyAttribute;
+                            return castedAttribrute.PropertyName;
+                        }
                         return memberExpression.Member.Name;
                     }
                 case ExpressionType.Parameter:
