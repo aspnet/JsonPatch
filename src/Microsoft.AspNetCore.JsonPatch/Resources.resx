@@ -129,6 +129,9 @@
   <data name="DictionaryKeyNotFound" xml:space="preserve">
     <value>The key '{0}' was not found.</value>
   </data>
+  <data name="InvalidDictionaryKeyFormat" xml:space="preserve">
+    <value>Failed to convert the property '{0}' to type '{1}'.</value>
+  </data>
   <data name="InvalidIndexForArrayProperty" xml:space="preserve">
     <value>For operation '{0}' on array property at path '{1}', the index is larger than the array size.</value>
   </data>

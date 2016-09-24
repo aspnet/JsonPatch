@@ -203,7 +203,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
 
                         // now, get the generic type of the enumerable
                         var genericTypeOfArray = GetIListType(typeOfPathProperty);
-                        var conversionResult = ConvertToActualType(genericTypeOfArray, value);
+                        var conversionResult = ConversionHelper.ConvertToActualType(genericTypeOfArray, value);
                         if (!conversionResult.CanBeConverted)
                         {
                             LogError(new JsonPatchError(
@@ -250,7 +250,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                             .GetValueForCaseInsensitiveKey(treeAnalysisResult.PropertyPathInParent).GetType();
 
                         // can the value be converted to the actual type?
-                        var conversionResult = ConvertToActualType(typeOfPathProperty, value);
+                        var conversionResult = ConversionHelper.ConvertToActualType(typeOfPathProperty, value);
                         if (conversionResult.CanBeConverted)
                         {
                             treeAnalysisResult.Container.SetValueForCaseInsensitiveKey(
@@ -270,7 +270,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 else
                 {
                     // New property - add it.  
-                    treeAnalysisResult.Container.Add(treeAnalysisResult.PropertyPathInParent, value);
+                    treeAnalysisResult.Container.SetValueForCaseInsensitiveKey(treeAnalysisResult.PropertyPathInParent, value);
                 }
             }
             else
@@ -295,7 +295,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
 
                     // now, get the generic type of the IList<> from Property type.
                     var genericTypeOfArray = GetIListType(patchProperty.Property.PropertyType);
-                    var conversionResult = ConvertToActualType(genericTypeOfArray, value);
+                    var conversionResult = ConversionHelper.ConvertToActualType(genericTypeOfArray, value);
                     if (!conversionResult.CanBeConverted)
                     {
                         LogError(new JsonPatchError(
@@ -334,7 +334,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 }
                 else
                 {
-                    var conversionResultTuple = ConvertToActualType(
+                    var conversionResultTuple = ConversionHelper.ConvertToActualType(
                         patchProperty.Property.PropertyType,
                         value);
 
@@ -740,7 +740,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 return;
             }
 
-            var conversionResult = ConvertToActualType(removeResult.ActualType, operation.value);
+            var conversionResult = ConversionHelper.ConvertToActualType(removeResult.ActualType, operation.value);
 
             if (!conversionResult.CanBeConverted)
             {
@@ -1002,20 +1002,6 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             else
             {
                 throw new JsonPatchException(jsonPatchError);
-            }
-        }
-
-        private ConversionResult ConvertToActualType(Type propertyType, object value)
-        {
-            try
-            {
-                var o = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value), propertyType);
-
-                return new ConversionResult(true, o);
-            }
-            catch (Exception)
-            {
-                return new ConversionResult(false, null);
             }
         }
 

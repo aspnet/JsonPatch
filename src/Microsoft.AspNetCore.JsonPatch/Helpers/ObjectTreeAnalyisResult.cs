@@ -5,6 +5,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Microsoft.Extensions.Internal;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Helpers
@@ -20,7 +22,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
 
         public bool IsValidPathForRemove { get; private set; }
 
-        public IDictionary<string, object> Container { get; private set; }
+        public IDictionaryWrapper Container { get; private set; }
 
         public string PropertyPathInParent { get; private set; }
 
@@ -33,7 +35,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
         {
             // construct the analysis result.
 
-            // split the propertypath, and if necessary, remove the first 
+            // split the propertypath, and if necessary, remove the first
             // empty item (that's the case when it starts with a "/")
             var propertyPathTree = propertyPath.Split(
                 new char[] { '/' },
@@ -42,19 +44,28 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
             // we've now got a split up property tree "base/property/otherproperty/..."
             int lastPosition = 0;
             object targetObject = objectToSearch;
+            IDictionaryWrapper dictionaryWrapper = null;
             for (int i = 0; i < propertyPathTree.Length; i++)
             {
                 lastPosition = i;
 
                 // if the current target object is an ExpandoObject (IDictionary<string, object>),
                 // we cannot use the ContractResolver.
-                var dictionary = targetObject as IDictionary<string, object>;
-                if (dictionary != null)
+                var dictionaryType = ClosedGenericMatcher.ExtractGenericInterface(
+                    targetObject.GetType(),
+                    typeof(IDictionary<,>));
+                if (dictionaryType != null)
                 {
-                    // find the value in the dictionary                   
-                    if (dictionary.ContainsCaseInsensitiveKey(propertyPathTree[i]))
+                    var keyType = dictionaryType.GetTypeInfo().GenericTypeArguments[0];
+                    var valueType = dictionaryType.GetTypeInfo().GenericTypeArguments[1];
+                    var concreteType = typeof(DictionaryWrapper<,>).MakeGenericType(keyType, valueType);
+                    var wrapper = (IDictionaryWrapper)Activator.CreateInstance(concreteType, args: targetObject);
+                    dictionaryWrapper = wrapper;
+
+                    // find the value in the dictionary
+                    if (wrapper.ContainsCaseInsensitiveKey(propertyPathTree[i]))
                     {
-                        var possibleNewTargetObject = dictionary.GetValueForCaseInsensitiveKey(propertyPathTree[i]);
+                        var possibleNewTargetObject = wrapper.GetValueForCaseInsensitiveKey(propertyPathTree[i]);
 
                         // unless we're at the last item, we should set the targetobject
                         // to the new object.  If we're at the last item, we need to stop
@@ -108,7 +119,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                         }
                         else
                         {
-                            // property cannot be found, and we're not working with dynamics.  
+                            // property cannot be found, and we're not working with dynamics.
                             // Stop, and return invalid path.
                             break;
                         }
@@ -127,12 +138,15 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
             // case, it's valid for add if there's 1 item left in the propertyPathTree.
             //
             // it can also be a property info.  In that case, if there's nothing left in the path
-            // tree we're at the end, if there's one left we can try and set that. 
-            if (targetObject is IDictionary<string, object>)
+            // tree we're at the end, if there's one left we can try and set that.
+            var idictionaryType = ClosedGenericMatcher.ExtractGenericInterface(
+                    targetObject.GetType(),
+                    typeof(IDictionary<,>));
+            if (idictionaryType != null)
             {
                 UseDynamicLogic = true;
 
-                Container = (IDictionary<string, object>)targetObject;
+                Container = dictionaryWrapper;
                 IsValidPathForAdd = true;
                 PropertyPathInParent = propertyPathTree[propertyPathTree.Length - 1];
 
@@ -204,6 +218,5 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                 return null;
             }
         }
-
     }
 }

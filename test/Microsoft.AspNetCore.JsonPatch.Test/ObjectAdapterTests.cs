@@ -1733,5 +1733,296 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
             Assert.Equal(0, doc.IntegerValue);
             Assert.Equal(new List<int>() { 1, 2, 3, 5 }, doc.IntegerList);
         }
+
+        private class Class6
+        {
+            public IDictionary<string, int> DictionaryOfStringToInteger { get; } = new Dictionary<string, int>();
+        }
+
+        [Fact]
+        public void Add_WhenDictionary_ValueIsNonObject_Succeeds()
+        {
+            // Arrange
+            var model = new Class6();
+            model.DictionaryOfStringToInteger["one"] = 1;
+            model.DictionaryOfStringToInteger["two"] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Add("/DictionaryOfStringToInteger/three", 3);
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(3, model.DictionaryOfStringToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfStringToInteger["one"]);
+            Assert.Equal(2, model.DictionaryOfStringToInteger["two"]);
+            Assert.Equal(3, model.DictionaryOfStringToInteger["three"]);
+        }
+
+        [Fact]
+        public void Remove_WhenDictionary_ValueIsNonObject_Succeeds()
+        {
+            // Arrange
+            var model = new Class6();
+            model.DictionaryOfStringToInteger["one"] = 1;
+            model.DictionaryOfStringToInteger["two"] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Remove("/DictionaryOfStringToInteger/two");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(1, model.DictionaryOfStringToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfStringToInteger["one"]);
+        }
+
+        [Fact]
+        public void Replace_WhenDictionary_ValueIsNonObject_Succeeds()
+        {
+            // Arrange
+            var model = new Class6();
+            model.DictionaryOfStringToInteger["one"] = 1;
+            model.DictionaryOfStringToInteger["two"] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace("/DictionaryOfStringToInteger/two", 20);
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfStringToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfStringToInteger["one"]);
+            Assert.Equal(20, model.DictionaryOfStringToInteger["two"]);
+        }
+
+        private class Class7
+        {
+            public IDictionary<Guid, int> DictionaryOfGuidToInteger { get; } = new Dictionary<Guid, int>();
+        }
+
+        [Fact]
+        public void Add_WhenDictionary_KeyIsNonString_Succeeds()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var key2 = Guid.NewGuid();
+            var model = new Class7();
+            model.DictionaryOfGuidToInteger[key1] = 1;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Add($"/DictionaryOfGuidToInteger/{key2.ToString()}", 2);
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfGuidToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfGuidToInteger[key1]);
+            Assert.Equal(2, model.DictionaryOfGuidToInteger[key2]);
+        }
+
+        [Fact]
+        public void Replace_WhenDictionary_KeyIsNonString_Succeeds()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var key2 = Guid.NewGuid();
+            var model = new Class7();
+            model.DictionaryOfGuidToInteger[key1] = 1;
+            model.DictionaryOfGuidToInteger[key2] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace($"/DictionaryOfGuidToInteger/{key2.ToString()}", 20);
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfGuidToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfGuidToInteger[key1]);
+            Assert.Equal(20, model.DictionaryOfGuidToInteger[key2]);
+        }
+
+        [Fact]
+        public void Remove_WhenDictionary_KeyIsNonString_Succeeds()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var key2 = Guid.NewGuid();
+            var model = new Class7();
+            model.DictionaryOfGuidToInteger[key1] = 1;
+            model.DictionaryOfGuidToInteger[key2] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Remove($"/DictionaryOfGuidToInteger/{key2.ToString()}");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(1, model.DictionaryOfGuidToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfGuidToInteger[key1]);
+        }
+
+        [Fact]
+        public void Add_WhenInvalidDictionaryKey_ThrowsException()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var model = new Class7();
+            model.DictionaryOfGuidToInteger[key1] = 1;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Add($"/DictionaryOfGuidToInteger/not-a-guid", 2);
+
+            // Act
+            var exception = Assert.Throws<JsonPatchException>(() => patchDocument.ApplyTo(model));
+
+            // Assert
+            Assert.Equal(
+                string.Format("Failed to convert the property '{0}' to type '{1}'.", "not-a-guid", typeof(System.Guid)),
+                exception.Message);
+        }
+
+        private class Customer
+        {
+            public string Name { get; set; }
+            public Address Address { get; set; }
+        }
+
+        private class Address
+        {
+            public string City { get; set; }
+        }
+
+        private class Class8
+        {
+            public IDictionary<Guid, Customer> DictionaryOfGuidToCustomer { get; } = new Dictionary<Guid, Customer>();
+        }
+
+        [Fact]
+        public void Replace_WhenDictionary_KeyIsNonStringAndValueAPocoType_Succeeds()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var value1 = new Customer() { Name = "Jamesss" };
+            var key2 = Guid.NewGuid();
+            var value2 = new Customer() { Name = "Mike" };
+            var model = new Class8();
+            model.DictionaryOfGuidToCustomer[key1] = value1;
+            model.DictionaryOfGuidToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace($"/DictionaryOfGuidToCustomer/{key1.ToString()}/Name", "James");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfGuidToCustomer.Count);
+            var actualValue1 = model.DictionaryOfGuidToCustomer[key1];
+            Assert.NotNull(actualValue1);
+            Assert.Equal("James", actualValue1.Name);
+        }
+
+        [Fact]
+        public void Replace_WhenDictionary_KeyIsNonStringAndValueAPocoType_Succeeds_WithSerialization()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var value1 = new Customer() { Name = "Jamesss" };
+            var key2 = Guid.NewGuid();
+            var value2 = new Customer() { Name = "Mike" };
+            var model = new Class8();
+            model.DictionaryOfGuidToCustomer[key1] = value1;
+            model.DictionaryOfGuidToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace($"/DictionaryOfGuidToCustomer/{key1.ToString()}/Name", "James");
+            var serialized = JsonConvert.SerializeObject(patchDocument);
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<Class8>>(serialized);
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfGuidToCustomer.Count);
+            var actualValue1 = model.DictionaryOfGuidToCustomer[key1];
+            Assert.NotNull(actualValue1);
+            Assert.Equal("James", actualValue1.Name);
+        }
+
+        [Fact]
+        public void Replace_DeepNested_DictionaryValue_Succeeds()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var value1 = new Customer() { Name = "Jamesss" };
+            var key2 = Guid.NewGuid();
+            var value2 = new Customer() { Name = "Mike" };
+            var model = new Class8();
+            model.DictionaryOfGuidToCustomer[key1] = value1;
+            model.DictionaryOfGuidToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace($"/DictionaryOfGuidToCustomer/{key1.ToString()}/Name", "James");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfGuidToCustomer.Count);
+            var actualValue1 = model.DictionaryOfGuidToCustomer[key1];
+            Assert.NotNull(actualValue1);
+            Assert.Equal("James", actualValue1.Name);
+        }
+
+        [Fact]
+        public void Replace_DeepNested_DictionaryValue_Succeeds_WithSerialization()
+        {
+            // Arrange
+            var key1 = Guid.NewGuid();
+            var value1 = new Customer() { Name = "James", Address = new Address { City = "Redmond" } };
+            var key2 = Guid.NewGuid();
+            var value2 = new Customer() { Name = "Mike", Address = new Address { City = "Seattle" } };
+            var model = new Class8();
+            model.DictionaryOfGuidToCustomer[key1] = value1;
+            model.DictionaryOfGuidToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace($"/DictionaryOfGuidToCustomer/{key1.ToString()}/Address/City", "Bellevue");
+            var serialized = JsonConvert.SerializeObject(patchDocument);
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<Class8>>(serialized);
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfGuidToCustomer.Count);
+            var actualValue1 = model.DictionaryOfGuidToCustomer[key1];
+            Assert.NotNull(actualValue1);
+            Assert.Equal("James", actualValue1.Name);
+            var address = actualValue1.Address;
+            Assert.NotNull(address);
+            Assert.Equal("Bellevue", address.City);
+        }
+
+        class Class9
+        {
+            public List<string> StringList { get; set; } = new List<string>();
+        }
+
+        [Fact]
+        public void AddToNonIntegerListAtEnd()
+        {
+            // Arrange
+            var model = new Class9()
+            {
+                StringList = new List<string>()
+            };
+            model.StringList.Add("string1");
+            model.StringList.Add("string2");
+            var patchDoc = new JsonPatchDocument();
+            patchDoc.Add("/StringList/0", "string3");
+
+            // Act
+            patchDoc.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(new List<string>() { "string3", "string1", "string2" }, model.StringList);
+        }
     }
 }
