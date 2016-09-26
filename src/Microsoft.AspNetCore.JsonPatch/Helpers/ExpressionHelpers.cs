@@ -64,8 +64,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                         if (jsonPropertyAttribute.Count() > 0)
                         {
                             // get value
-                            var castedAttribrute = jsonPropertyAttribute.First() as JsonPropertyAttribute;
-                            return left + "/" + castedAttribrute.PropertyName;
+                            var castedAttribute = (JsonPropertyAttribute)jsonPropertyAttribute.First();
+                            return left + "/" + castedAttribute.PropertyName;
                         }
                         return left + "/" + memberExpression.Member.Name;
                     }
@@ -80,8 +80,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                         if (jsonPropertyAttribute.Count() > 0)
                         {
                             // get value
-                            var castedAttribrute = jsonPropertyAttribute.First() as JsonPropertyAttribute;
-                            return castedAttribrute.PropertyName;
+                            var castedAttribute = (JsonPropertyAttribute)jsonPropertyAttribute.First();
+                            return castedAttribute.PropertyName;
                         }
                         return memberExpression.Member.Name;
                     }

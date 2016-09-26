@@ -3,7 +3,7 @@
 
 using Newtonsoft.Json;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test
+namespace Microsoft.AspNetCore.JsonPatch
 {
     public class JsonPropertyDTO
     {

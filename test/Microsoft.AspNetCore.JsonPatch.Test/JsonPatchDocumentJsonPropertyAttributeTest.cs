@@ -5,12 +5,12 @@ using Newtonsoft.Json;
 using System.Linq;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test
+namespace Microsoft.AspNetCore.JsonPatch
 {
-    public class JsonPropertyTests
+    public class JsonPatchDocumentJsonPropertyAttributeTest
     {
         [Fact]
-        public void HonourJsonPropertyOnSerialization()
+        public void Add_WithExpression_RespectsJsonPropertyName_ForModelProperty()
         {
             JsonPatchDocument<JsonPropertyDTO> patchDoc = new JsonPatchDocument<JsonPropertyDTO>();
             patchDoc.Add(p => p.Name, "John");
@@ -21,11 +21,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameDTO>>(serialized);
 
-            Assert.Equal(deserialized.Operations.First().path, "/anothername");
+            // get path
+            var pathToCheck = deserialized.Operations.First().path;
+            Assert.Equal(pathToCheck, "/anothername");
         }
 
         [Fact]
-        public void CanApplyToDifferentlyTypedClassWithPropertyMatchingJsonPropertyName()
+        public void Add_WithExpression_RespectsJsonPropertyName_WhenApplyingToDifferentlyTypedClassWithPropertyMatchingJsonPropertyName()
         {
             JsonPatchDocument<JsonPropertyDTO> patchDocToSerialize =
                 new JsonPatchDocument<JsonPropertyDTO>();
@@ -49,7 +51,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
         }
 
         [Fact]
-        public void CanApplyToSameTypedClassWithMatchingJsonPropertyName()
+        public void Add_WithExpression_RespectsJsonPropertyName_WhenApplyingToSameTypedClassWithMatchingJsonPropertyName()
         {
             JsonPatchDocument<JsonPropertyDTO> patchDocToSerialize =
                 new JsonPatchDocument<JsonPropertyDTO>();
@@ -75,7 +77,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
         }
 
         [Fact]
-        public void HonourJsonPropertyOnApplyForAdd()
+        public void Add_OnApplyFromJson_RespectsJsonPropertyNameOnJsonDocument()
         {
             var doc = new JsonPropertyDTO()
             {
@@ -93,7 +95,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
         }
 
         [Fact]
-        public void HonourJsonPropertyOnApplyForRemove()
+        public void Remove_OnApplyFromJson_RespectsJsonPropertyNameOnJsonDocument()
         {
             var doc = new JsonPropertyDTO()
             {
