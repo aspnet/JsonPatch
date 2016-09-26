@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.AspNetCore.JsonPatch.Helpers
 {
-    internal static class ConversionHelper
+    internal static class ConversionResultProvider
     {
-        public static ConversionResult ConvertToActualType(Type propertyType, object value)
+        public static ConversionResult ConvertTo(Type propertyType, object value)
         {
             try
             {

@@ -22,7 +22,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
 
         public bool IsValidPathForRemove { get; private set; }
 
-        public IDictionaryWrapper Container { get; private set; }
+        public ICaseInsensitiveDictionary Container { get; private set; }
 
         public string PropertyPathInParent { get; private set; }
 
@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
             // we've now got a split up property tree "base/property/otherproperty/..."
             int lastPosition = 0;
             object targetObject = objectToSearch;
-            IDictionaryWrapper dictionaryWrapper = null;
+            ICaseInsensitiveDictionary dictionaryWrapper = null;
             for (int i = 0; i < propertyPathTree.Length; i++)
             {
                 lastPosition = i;
@@ -58,14 +58,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                 {
                     var keyType = dictionaryType.GetTypeInfo().GenericTypeArguments[0];
                     var valueType = dictionaryType.GetTypeInfo().GenericTypeArguments[1];
-                    var concreteType = typeof(DictionaryWrapper<,>).MakeGenericType(keyType, valueType);
-                    var wrapper = (IDictionaryWrapper)Activator.CreateInstance(concreteType, args: targetObject);
+                    var concreteType = typeof(CaseInsensitiveDictionary<,>).MakeGenericType(keyType, valueType);
+                    var wrapper = (ICaseInsensitiveDictionary)Activator.CreateInstance(concreteType, args: targetObject);
                     dictionaryWrapper = wrapper;
 
                     // find the value in the dictionary
-                    if (wrapper.ContainsCaseInsensitiveKey(propertyPathTree[i]))
+                    if (wrapper.ContainsKey(propertyPathTree[i]))
                     {
-                        var possibleNewTargetObject = wrapper.GetValueForCaseInsensitiveKey(propertyPathTree[i]);
+                        var possibleNewTargetObject = wrapper.Get(propertyPathTree[i]);
 
                         // unless we're at the last item, we should set the targetobject
                         // to the new object.  If we're at the last item, we need to stop
@@ -151,7 +151,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                 PropertyPathInParent = propertyPathTree[propertyPathTree.Length - 1];
 
                 // to be able to remove this property, it must exist
-                IsValidPathForRemove = Container.ContainsCaseInsensitiveKey(PropertyPathInParent);
+                IsValidPathForRemove = Container.ContainsKey(PropertyPathInParent);
             }
             else if (targetObject is IList)
             {
