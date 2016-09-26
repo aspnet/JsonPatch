@@ -201,6 +201,32 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
         }
 
         [Fact]
+        public void AddToList_ComplexType_WithSerialization()
+        {
+            // Arrange
+            var doc = new SimpleDTOWithNestedDTO()
+            {
+                SimpleDTO = new SimpleDTO()
+                {
+                    IntegerList = new List<int>() { 1, 2, 3 }
+                }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTOWithNestedDTO>();
+            patchDoc.Add<int>(o => o.SimpleDTO.IntegerList, 4, 0);
+
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTOWithNestedDTO>>(serialized);
+
+            // Act
+            deserialized.ApplyTo(doc);
+
+            // Assert
+            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.SimpleDTO.IntegerList);
+        }
+
+        [Fact]
         public void AddToIntegerIList()
         {
             // Arrange

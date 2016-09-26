@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
             // we've now got a split up property tree "base/property/otherproperty/..."
             int lastPosition = 0;
             object targetObject = objectToSearch;
-            ICaseInsensitiveDictionary dictionaryWrapper = null;
+            ICaseInsensitiveDictionary caseInsensitiveDictionary = null;
             for (int i = 0; i < propertyPathTree.Length; i++)
             {
                 lastPosition = i;
@@ -59,13 +59,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                     var keyType = dictionaryType.GetTypeInfo().GenericTypeArguments[0];
                     var valueType = dictionaryType.GetTypeInfo().GenericTypeArguments[1];
                     var concreteType = typeof(CaseInsensitiveDictionary<,>).MakeGenericType(keyType, valueType);
-                    var wrapper = (ICaseInsensitiveDictionary)Activator.CreateInstance(concreteType, args: targetObject);
-                    dictionaryWrapper = wrapper;
+                    caseInsensitiveDictionary = (ICaseInsensitiveDictionary)Activator.CreateInstance(
+                        concreteType,
+                        args: targetObject);
 
                     // find the value in the dictionary
-                    if (wrapper.ContainsKey(propertyPathTree[i]))
+                    if (caseInsensitiveDictionary.ContainsKey(propertyPathTree[i]))
                     {
-                        var possibleNewTargetObject = wrapper.Get(propertyPathTree[i]);
+                        var possibleNewTargetObject = caseInsensitiveDictionary.Get(propertyPathTree[i]);
 
                         // unless we're at the last item, we should set the targetobject
                         // to the new object.  If we're at the last item, we need to stop
@@ -146,7 +147,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
             {
                 UseDynamicLogic = true;
 
-                Container = dictionaryWrapper;
+                Container = caseInsensitiveDictionary;
                 IsValidPathForAdd = true;
                 PropertyPathInParent = propertyPathTree[propertyPathTree.Length - 1];
 
