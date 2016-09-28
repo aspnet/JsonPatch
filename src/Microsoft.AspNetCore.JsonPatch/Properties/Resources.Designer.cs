@@ -75,6 +75,22 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         /// <summary>
+        /// Failed to convert the property '{0}' to type '{1}'.
+        /// </summary>
+        internal static string InvalidDictionaryKeyFormat
+        {
+            get { return GetString("InvalidDictionaryKeyFormat"); }
+        }
+
+        /// <summary>
+        /// Failed to convert the property '{0}' to type '{1}'.
+        /// </summary>
+        internal static string FormatInvalidDictionaryKeyFormat(object p0, object p1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("InvalidDictionaryKeyFormat"), p0, p1);
+        }
+
+        /// <summary>
         /// For operation '{0}' on array property at path '{1}', the index is larger than the array size.
         /// </summary>
         internal static string InvalidIndexForArrayProperty

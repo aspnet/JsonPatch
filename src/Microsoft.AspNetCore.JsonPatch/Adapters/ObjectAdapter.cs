@@ -179,7 +179,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             if (treeAnalysisResult.UseDynamicLogic)
             {
                 var container = treeAnalysisResult.Container;
-                if (container.ContainsCaseInsensitiveKey(treeAnalysisResult.PropertyPathInParent))
+                if (container.ContainsKey(treeAnalysisResult.PropertyPathInParent))
                 {
                     // Existing property.  
                     // If it's not an array, we need to check if the value fits the property type
@@ -189,7 +189,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                     if (appendList || positionAsInteger > -1)
                     {
                         // get the actual type
-                        var propertyValue = container.GetValueForCaseInsensitiveKey(treeAnalysisResult.PropertyPathInParent);
+                        var propertyValue = container.Get(treeAnalysisResult.PropertyPathInParent);
                         var typeOfPathProperty = propertyValue.GetType();
 
                         if (!IsNonStringArray(typeOfPathProperty))
@@ -203,7 +203,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
 
                         // now, get the generic type of the enumerable
                         var genericTypeOfArray = GetIListType(typeOfPathProperty);
-                        var conversionResult = ConvertToActualType(genericTypeOfArray, value);
+                        var conversionResult = ConversionResultProvider.ConvertTo(genericTypeOfArray, value);
                         if (!conversionResult.CanBeConverted)
                         {
                             LogError(new JsonPatchError(
@@ -214,13 +214,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                         }
 
                         // get value (it can be cast, we just checked that) 
-                        var array = treeAnalysisResult.Container.GetValueForCaseInsensitiveKey(
+                        var array = treeAnalysisResult.Container.Get(
                             treeAnalysisResult.PropertyPathInParent) as IList;
 
                         if (appendList)
                         {
                             array.Add(conversionResult.ConvertedInstance);
-                            treeAnalysisResult.Container.SetValueForCaseInsensitiveKey(
+                            treeAnalysisResult.Container.Set(
                                 treeAnalysisResult.PropertyPathInParent, array);
                         }
                         else
@@ -239,7 +239,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                             }
 
                             array.Insert(positionAsInteger, conversionResult.ConvertedInstance);
-                            treeAnalysisResult.Container.SetValueForCaseInsensitiveKey(
+                            treeAnalysisResult.Container.Set(
                                 treeAnalysisResult.PropertyPathInParent, array);
                         }
                     }
@@ -247,13 +247,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                     {
                         // get the actual type
                         var typeOfPathProperty = treeAnalysisResult.Container
-                            .GetValueForCaseInsensitiveKey(treeAnalysisResult.PropertyPathInParent).GetType();
+                            .Get(treeAnalysisResult.PropertyPathInParent).GetType();
 
                         // can the value be converted to the actual type?
-                        var conversionResult = ConvertToActualType(typeOfPathProperty, value);
+                        var conversionResult = ConversionResultProvider.ConvertTo(typeOfPathProperty, value);
                         if (conversionResult.CanBeConverted)
                         {
-                            treeAnalysisResult.Container.SetValueForCaseInsensitiveKey(
+                            treeAnalysisResult.Container.Set(
                                     treeAnalysisResult.PropertyPathInParent,
                                     conversionResult.ConvertedInstance);
                         }
@@ -295,7 +295,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
 
                     // now, get the generic type of the IList<> from Property type.
                     var genericTypeOfArray = GetIListType(patchProperty.Property.PropertyType);
-                    var conversionResult = ConvertToActualType(genericTypeOfArray, value);
+                    var conversionResult = ConversionResultProvider.ConvertTo(genericTypeOfArray, value);
                     if (!conversionResult.CanBeConverted)
                     {
                         LogError(new JsonPatchError(
@@ -334,7 +334,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 }
                 else
                 {
-                    var conversionResultTuple = ConvertToActualType(
+                    var conversionResultTuple = ConversionResultProvider.ConvertTo(
                         patchProperty.Property.PropertyType,
                         value);
 
@@ -499,7 +499,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 if (removeFromList || positionAsInteger > -1)
                 {
                     var propertyValue = treeAnalysisResult.Container
-                        .GetValueForCaseInsensitiveKey(treeAnalysisResult.PropertyPathInParent);
+                        .Get(treeAnalysisResult.PropertyPathInParent);
 
                     // we cannot continue when the value is null, because to be able to
                     // continue we need to be able to check if the array is a non-string array
@@ -527,7 +527,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                     var genericTypeOfArray = GetIListType(typeOfPathProperty);
 
                     // get the array
-                    var array = (IList)treeAnalysisResult.Container.GetValueForCaseInsensitiveKey(
+                    var array = (IList)treeAnalysisResult.Container.Get(
                         treeAnalysisResult.PropertyPathInParent);
 
                     if (array.Count == 0)
@@ -545,7 +545,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                     if (removeFromList)
                     {
                         array.RemoveAt(array.Count - 1);
-                        treeAnalysisResult.Container.SetValueForCaseInsensitiveKey(
+                        treeAnalysisResult.Container.Set(
                             treeAnalysisResult.PropertyPathInParent, array);
 
                         // return the type of the value that has been removed.
@@ -565,7 +565,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                         }
 
                         array.RemoveAt(positionAsInteger);
-                        treeAnalysisResult.Container.SetValueForCaseInsensitiveKey(
+                        treeAnalysisResult.Container.Set(
                             treeAnalysisResult.PropertyPathInParent, array);
 
                         // return the type of the value that has been removed.
@@ -575,11 +575,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 else
                 {
                     // get the property
-                    var getResult = treeAnalysisResult.Container.GetValueForCaseInsensitiveKey(
+                    var getResult = treeAnalysisResult.Container.Get(
                         treeAnalysisResult.PropertyPathInParent);
 
                     // remove the property
-                    treeAnalysisResult.Container.RemoveValueForCaseInsensitiveKey(
+                    treeAnalysisResult.Container.Remove(
                         treeAnalysisResult.PropertyPathInParent);
 
                     // value is not null, we can determine the type
@@ -740,7 +740,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 return;
             }
 
-            var conversionResult = ConvertToActualType(removeResult.ActualType, operation.value);
+            var conversionResult = ConversionResultProvider.ConvertTo(removeResult.ActualType, operation.value);
 
             if (!conversionResult.CanBeConverted)
             {
@@ -858,7 +858,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 if (getAtEndOfList || positionAsInteger > -1)
                 {
                     var propertyValue = treeAnalysisResult.Container
-                        .GetValueForCaseInsensitiveKey(treeAnalysisResult.PropertyPathInParent);
+                        .Get(treeAnalysisResult.PropertyPathInParent);
 
                     // we cannot continue when the value is null, because to be able to
                     // continue we need to be able to check if the array is a non-string array
@@ -883,7 +883,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                     }
 
                     // get the array
-                    var array = (IList)treeAnalysisResult.Container.GetValueForCaseInsensitiveKey(
+                    var array = (IList)treeAnalysisResult.Container.Get(
                         treeAnalysisResult.PropertyPathInParent);
 
                     if (positionAsInteger >= array.Count)
@@ -909,7 +909,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                 else
                 {
                     // get the property
-                    var propertyValueAtLocation = treeAnalysisResult.Container.GetValueForCaseInsensitiveKey(
+                    var propertyValueAtLocation = treeAnalysisResult.Container.Get(
                         treeAnalysisResult.PropertyPathInParent);
 
                     return new GetValueResult(propertyValueAtLocation, false);
@@ -1002,20 +1002,6 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             else
             {
                 throw new JsonPatchException(jsonPatchError);
-            }
-        }
-
-        private ConversionResult ConvertToActualType(Type propertyType, object value)
-        {
-            try
-            {
-                var o = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value), propertyType);
-
-                return new ConversionResult(true, o);
-            }
-            catch (Exception)
-            {
-                return new ConversionResult(false, null);
             }
         }
 
