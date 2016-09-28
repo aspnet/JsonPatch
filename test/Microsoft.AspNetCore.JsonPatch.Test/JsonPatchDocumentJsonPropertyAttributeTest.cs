@@ -12,7 +12,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         [Fact]
         public void Add_WithExpression_RespectsJsonPropertyName_ForModelProperty()
         {
-            JsonPatchDocument<JsonPropertyDTO> patchDoc = new JsonPatchDocument<JsonPropertyDTO>();
+            var patchDoc = new JsonPatchDocument<JsonPropertyDTO>();
             patchDoc.Add(p => p.Name, "John");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -29,8 +29,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         [Fact]
         public void Add_WithExpression_RespectsJsonPropertyName_WhenApplyingToDifferentlyTypedClassWithPropertyMatchingJsonPropertyName()
         {
-            JsonPatchDocument<JsonPropertyDTO> patchDocToSerialize =
-                new JsonPatchDocument<JsonPropertyDTO>();
+            var patchDocToSerialize = new JsonPatchDocument<JsonPropertyDTO>();
             patchDocToSerialize.Add(p => p.Name, "John");
 
             // the patchdoc will deserialize to "anothername".  We should thus be able to apply 
@@ -53,8 +52,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         [Fact]
         public void Add_WithExpression_RespectsJsonPropertyName_WhenApplyingToSameTypedClassWithMatchingJsonPropertyName()
         {
-            JsonPatchDocument<JsonPropertyDTO> patchDocToSerialize =
-                new JsonPatchDocument<JsonPropertyDTO>();
+            var patchDocToSerialize = new JsonPatchDocument<JsonPropertyDTO>();
             patchDocToSerialize.Add(p => p.Name, "John");
 
             // the patchdoc will deserialize to "anothername".  As JsonPropertyDTO has
@@ -110,6 +108,41 @@ namespace Microsoft.AspNetCore.JsonPatch
             deserialized.ApplyTo(doc);
 
             Assert.Equal(null, doc.Name);
+        }
+
+        [Fact]
+        public void Add_OnApplyFromJson_RespectsInheritedJsonPropertyNameOnJsonDocument()
+        {
+            var doc = new JsonPropertyWithInheritanceDTO()
+            {
+                Name = "InitialName"
+            };
+
+            // serialization should serialize to "AnotherName"
+            var serialized = "[{\"value\":\"Kevin\",\"path\":\"/AnotherName\",\"op\":\"add\"}]";
+            var deserialized =
+                JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithInheritanceDTO>>(serialized);
+
+            deserialized.ApplyTo(doc);
+
+            Assert.Equal("Kevin", doc.Name);
+        }
+
+        [Fact]
+        public void Add_WithExpression_RespectsJsonPropertyName_ForInheritedModelProperty()
+        {
+            var patchDoc = new JsonPatchDocument<JsonPropertyWithInheritanceDTO>();
+            patchDoc.Add(p => p.Name, "John");
+
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            // serialized value should have "AnotherName" as path
+            // deserialize to a JsonPatchDocument<JsonPropertyWithAnotherNameDTO> to check
+            var deserialized =
+                JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameDTO>>(serialized);
+
+            // get path
+            var pathToCheck = deserialized.Operations.First().path;
+            Assert.Equal(pathToCheck, "/anothername");
         }
     }
 }

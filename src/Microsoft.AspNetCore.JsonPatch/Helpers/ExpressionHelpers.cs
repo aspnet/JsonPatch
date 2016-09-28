@@ -54,36 +54,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                     if (ContinueWithSubPath(memberExpression.Expression.NodeType, false))
                     {
                         var left = GetPath(memberExpression.Expression, false);
-
-                        // if there's a JsonProperty attribute, we must return the PropertyName
-                        // from the attribute rather than the member name 
-                        var jsonPropertyAttribute =
-                            memberExpression.Member.GetCustomAttributes(
-                            typeof(JsonPropertyAttribute), false);
-
-                        if (jsonPropertyAttribute.Count() > 0)
-                        {
-                            // get value
-                            var castedAttribute = (JsonPropertyAttribute)jsonPropertyAttribute.First();
-                            return left + "/" + castedAttribute.PropertyName;
-                        }
-                        return left + "/" + memberExpression.Member.Name;
+                        // Get property name, respecting JsonProperty attribute
+                        return left + "/" + GetPropertyNameFromMemberExpression(memberExpression);
                     }
                     else
                     {
-                        // Same here: if there's a JsonProperty attribute, we must return the PropertyName
-                        // from the attribute rather than the member name 
-                        var jsonPropertyAttribute =
-                            memberExpression.Member.GetCustomAttributes(
-                            typeof(JsonPropertyAttribute), false);
-
-                        if (jsonPropertyAttribute.Count() > 0)
-                        {
-                            // get value
-                            var castedAttribute = (JsonPropertyAttribute)jsonPropertyAttribute.First();
-                            return castedAttribute.PropertyName;
-                        }
-                        return memberExpression.Member.Name;
+                        // Get property name, respecting JsonProperty attribute                       
+                        return GetPropertyNameFromMemberExpression(memberExpression);
                     }
                 case ExpressionType.Parameter:
                     // Fits "x => x" (the whole document which is "" as JSON pointer)
@@ -91,6 +68,26 @@ namespace Microsoft.AspNetCore.JsonPatch.Helpers
                 default:
                     return string.Empty;
             }
+        }
+
+        private static string GetPropertyNameFromMemberExpression(MemberExpression memberExpression)
+        {
+            // if there's a JsonProperty attribute, we must return the PropertyName
+            // from the attribute rather than the member name 
+            var jsonPropertyAttribute =
+                memberExpression.Member.GetCustomAttributes(
+                typeof(JsonPropertyAttribute), true);
+
+            // to object[] to avoid LINQ
+            var jsonPropertyAttributeAsObjectArray = (object[])jsonPropertyAttribute;
+
+            if (jsonPropertyAttributeAsObjectArray.Length > 0)
+            {
+                // get value
+                var castedAttribute = (JsonPropertyAttribute)jsonPropertyAttributeAsObjectArray[0];
+                return castedAttribute.PropertyName;                
+            }
+            return memberExpression.Member.Name;
         }
 
         private static bool ContinueWithSubPath(ExpressionType expressionType, bool firstTime)
