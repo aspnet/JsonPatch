@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
@@ -12,6 +14,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private readonly string[] _segments;
 
+        private static readonly Regex escapingRegex = new Regex("~(?<code>0|1)", RegexOptions.Compiled);
+
         public ParsedPath(string path)
         {
             if (path == null)
@@ -19,7 +23,10 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 throw new ArgumentNullException(nameof(path));
             }
 
-            _segments = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            _segments = path
+                .Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(segment => escapingRegex.Replace(segment, (match) => match.Groups["code"].Value == "0" ? "~" : "/"))
+                .ToArray();
         }
 
         public string LastSegment
