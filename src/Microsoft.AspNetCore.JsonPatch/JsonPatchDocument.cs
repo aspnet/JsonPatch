@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Microsoft.AspNetCore.JsonPatch.Converters;
+using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Newtonsoft.Json;
@@ -170,7 +171,19 @@ namespace Microsoft.AspNetCore.JsonPatch
                 throw new ArgumentNullException(nameof(objectToApplyTo));
             }
 
-            ApplyTo(objectToApplyTo, new ObjectAdapter(ContractResolver, logErrorAction));
+            try
+            {
+                ApplyTo(objectToApplyTo, new ObjectAdapter(ContractResolver, logErrorAction));
+            }
+            catch (JsonPatchException jsonPatchException)
+            {
+                JsonPatchErrorHelper.ReportError(
+                    logErrorAction,
+                    new JsonPatchError(
+                        jsonPatchException.AffectedObject,
+                        jsonPatchException.FailedOperation,
+                        jsonPatchException.Message));
+            }
         }
 
         /// <summary>
