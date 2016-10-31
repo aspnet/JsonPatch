@@ -171,18 +171,22 @@ namespace Microsoft.AspNetCore.JsonPatch
                 throw new ArgumentNullException(nameof(objectToApplyTo));
             }
 
-            try
+            var adapter = new ObjectAdapter(ContractResolver, logErrorAction);
+            foreach (var op in Operations)
             {
-                ApplyTo(objectToApplyTo, new ObjectAdapter(ContractResolver, logErrorAction));
-            }
-            catch (JsonPatchException jsonPatchException)
-            {
-                JsonPatchErrorHelper.ReportError(
-                    logErrorAction,
-                    new JsonPatchError(
-                        jsonPatchException.AffectedObject,
-                        jsonPatchException.FailedOperation,
-                        jsonPatchException.Message));
+                try
+                {
+                    op.Apply(objectToApplyTo, adapter);
+                }
+                catch (JsonPatchException jsonPatchException)
+                {
+                    JsonPatchErrorHelper.ReportError(
+                        logErrorAction,
+                        new JsonPatchError(objectToApplyTo, op, jsonPatchException.Message));
+
+                    // As per JSON Patch spec if an operation results in error, further operations should not be executed.
+                    break;
+                }
             }
         }
 
