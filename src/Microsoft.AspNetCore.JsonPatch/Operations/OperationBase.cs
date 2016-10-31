@@ -9,15 +9,17 @@ namespace Microsoft.AspNetCore.JsonPatch.Operations
 {
     public class OperationBase
     {
-        private string _operation;
-        private OperationType _operationType;
-
         [JsonIgnore]
         public OperationType OperationType
         {
             get
             {
-                return _operationType;
+                OperationType result;
+                if (!Enum.TryParse<OperationType>(op, ignoreCase: true, result: out result))
+                {
+                    throw new JsonPatchException($"Invalid JsonPatch operation '{op}'.", innerException: null);
+                }
+                return result;
             }
         }
 
@@ -25,23 +27,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Operations
         public string path { get; set; }
 
         [JsonProperty("op")]
-        public string op
-        {
-            get
-            {
-                return _operation;
-            }
-            set
-            {
-                OperationType result;
-                if (!Enum.TryParse<OperationType>(value, ignoreCase: true, result: out result))
-                {
-                    throw new JsonPatchException($"Invalid JsonPatch operation '{value}'.", innerException: null);
-                }
-                _operation = value;
-                _operationType = result;
-            }
-        }
+        public string op { get; set; }
 
         [JsonProperty("from")]
         public string from { get; set; }
