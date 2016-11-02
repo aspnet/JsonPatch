@@ -15,9 +15,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Operations
             get
             {
                 OperationType result;
-                if (!Enum.TryParse<OperationType>(op, ignoreCase: true, result: out result))
+                if (!Enum.TryParse(op, ignoreCase: true, result: out result))
                 {
-                    throw new JsonPatchException($"Invalid JsonPatch operation '{op}'.", innerException: null);
+                    throw new JsonPatchException(
+                        Resources.FormatInvalidJsonPatchOperation(op),
+                        innerException: null);
                 }
                 return result;
             }
