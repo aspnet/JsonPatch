@@ -180,9 +180,8 @@ namespace Microsoft.AspNetCore.JsonPatch
                 }
                 catch (JsonPatchException jsonPatchException)
                 {
-                    JsonPatchErrorHelper.ReportError(
-                        logErrorAction,
-                        new JsonPatchError(objectToApplyTo, op, jsonPatchException.Message));
+                    var errorReporter = logErrorAction ?? ErrorReporter.Default;
+                    errorReporter(new JsonPatchError(objectToApplyTo, op, jsonPatchException.Message));
 
                     // As per JSON Patch spec if an operation results in error, further operations should not be executed.
                     break;
