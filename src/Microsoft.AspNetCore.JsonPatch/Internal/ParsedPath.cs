@@ -1,9 +1,11 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
@@ -14,8 +16,6 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private readonly string[] _segments;
 
-        private static readonly Regex escapingRegex = new Regex("~(?<code>0|1)", RegexOptions.Compiled);
-
         public ParsedPath(string path)
         {
             if (path == null)
@@ -23,10 +23,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 throw new ArgumentNullException(nameof(path));
             }
 
-            _segments = path
-                .Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(segment => escapingRegex.Replace(segment, (match) => match.Groups["code"].Value == "0" ? "~" : "/"))
-                .ToArray();
+            _segments = ParsePath(path);
         }
 
         public string LastSegment
@@ -43,5 +40,50 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         public IReadOnlyList<string> Segments => _segments ?? Empty;
+
+        private static string[] ParsePath(string path)
+        {
+            List<string> strings = new List<string>();
+            StringBuilder sb = new StringBuilder(path.Length);
+
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (path[i] == '/')
+                {
+                    if (sb.Length > 0)
+                    {
+                        strings.Add(sb.ToString());
+                        sb.Length = 0;
+                    }
+                }
+                else if (path[i] == '~')
+                {
+                    ++i;
+                    if (i >= path.Length)
+                    {
+                        throw new JsonPatchException(Resources.FormatInvalidValueForPath(path), null);
+                    }
+
+                    if (path[i] == '0')
+                    {
+                        sb.Append('~');
+                    }
+                    else if (path[i] == '1')
+                    {
+                        sb.Append('/');
+                    }
+                    else
+                    {
+                        throw new JsonPatchException(Resources.FormatInvalidValueForPath(path), null);
+                    }
+                }
+                else
+                {
+                    sb.Append(path[i]);
+                }
+            }
+
+            return strings.ToArray();
+        }
     }
 }
