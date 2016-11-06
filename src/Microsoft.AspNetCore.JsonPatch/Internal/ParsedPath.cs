@@ -83,6 +83,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 }
             }
 
+            if (sb.Length > 0)
+            {
+                strings.Add(sb.ToString());
+            }
+
             return strings.ToArray();
         }
     }
