@@ -9,5 +9,8 @@ namespace Microsoft.AspNetCore.JsonPatch
     {
         [JsonProperty("foo/bar~")]
         public string FooSlashBars { get; set; }
+
+        [JsonProperty("foo/~")]
+        public SimpleDTO FooSlashTilde { get; set; }
     }
 }

@@ -4,9 +4,7 @@
 using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
@@ -43,8 +41,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private static string[] ParsePath(string path)
         {
-            List<string> strings = new List<string>();
-            StringBuilder sb = new StringBuilder(path.Length);
+            var strings = new List<string>();
+            var sb = new StringBuilder(path.Length);
 
             for (int i = 0; i < path.Length; i++)
             {
