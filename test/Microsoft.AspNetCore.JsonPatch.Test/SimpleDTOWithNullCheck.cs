@@ -7,7 +7,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 {
     public class SimpleDTOWithNullCheck
     {
-        string stringProperty;
+        private string stringProperty;
 
         public string StringProperty
         {
@@ -22,6 +22,7 @@ namespace Microsoft.AspNetCore.JsonPatch
                 {
                     throw new ArgumentNullException();
                 }
+
                 stringProperty = value;
             }
         }
