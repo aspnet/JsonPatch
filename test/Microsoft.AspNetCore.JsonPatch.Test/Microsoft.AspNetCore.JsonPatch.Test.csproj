@@ -3,7 +3,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.1;net451</TargetFrameworks>
-    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' AND '$(TargetFramework)'!='netcoreapp1.0'">win7-x64</RuntimeIdentifier>
+    <PackageTargetFallback>$(PackageTargetFallback);portable-win8+net45</PackageTargetFallback>
+    <RuntimeIdentifier Condition="'$(TargetFramework)'!='netcoreapp1.1'">win7-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
