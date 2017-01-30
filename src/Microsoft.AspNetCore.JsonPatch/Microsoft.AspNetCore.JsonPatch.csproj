@@ -4,6 +4,7 @@
   <PropertyGroup>
     <Description>ASP.NET Core support for JSON PATCH.</Description>
     <TargetFrameworks>net451;netstandard1.3</TargetFrameworks>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>aspnetcore;json;jsonpatch</PackageTags>
   </PropertyGroup>
