@@ -3,10 +3,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.1;net451</TargetFrameworks>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' AND '$(TargetFramework)'!='netcoreapp1.0'">win7-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Microsoft.AspNetCore.JsonPatch/Microsoft.AspNetCore.JsonPatch.csproj" />
+    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.JsonPatch\Microsoft.AspNetCore.JsonPatch.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Testing" Version="1.2.0-*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-*" />
     <PackageReference Include="Moq" Version="4.6.36-*" />
