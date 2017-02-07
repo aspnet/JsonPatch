@@ -191,6 +191,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private bool TryConvertValue(object value, Type propertyType, out object convertedValue)
         {
+            if (value != null && propertyType.IsAssignableFrom(value.GetType()))
+            {
+                convertedValue = value;
+                return true;
+            }
+
             var conversionResult = ConversionResultProvider.ConvertTo(value, propertyType);
             if (!conversionResult.CanBeConverted)
             {

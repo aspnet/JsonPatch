@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Extensions.Internal;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
@@ -202,6 +203,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             out object convertedValue,
             out string errorMessage)
         {
+            if (originalValue != null && listTypeArgument.IsAssignableFrom(originalValue.GetType()))
+            {
+                convertedValue = originalValue;
+                errorMessage = null;
+                return true;
+            }
+
             var conversionResult = ConversionResultProvider.ConvertTo(originalValue, listTypeArgument);
             if (!conversionResult.CanBeConverted)
             {

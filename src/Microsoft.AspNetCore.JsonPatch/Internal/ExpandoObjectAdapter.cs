@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
@@ -128,8 +129,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             object existingValue = null;
             if (dictionary.TryGetValue(key, out existingValue))
             {
-                if (existingValue != null)
+                if (existingValue != null && newValue != null)
                 {
+                    if (existingValue.GetType().IsAssignableFrom(newValue.GetType()))
+                    {
+                        return newValue;
+                    }
+
                     var conversionResult = ConversionResultProvider.ConvertTo(newValue, existingValue.GetType());
                     if (conversionResult.CanBeConverted)
                     {
