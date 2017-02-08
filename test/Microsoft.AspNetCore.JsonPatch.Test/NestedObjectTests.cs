@@ -1700,6 +1700,80 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
+        public void CopyDeepCloneObject()
+        {
+            // Arrange
+            var doc = new SimpleDTOWithNestedDTO()
+            {
+                SimpleDTO = new SimpleDTO()
+                {
+                    StringProperty = "A",
+                    AnotherStringProperty = "B"
+                },
+                InheritedDTO = new InheritedDTO()
+                {
+                    StringProperty = "C",
+                    AnotherStringProperty = "D"
+                }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTOWithNestedDTO>();
+            patchDoc.Copy<SimpleDTO>(o => o.InheritedDTO, o => o.SimpleDTO);
+
+            // Act
+            patchDoc.ApplyTo(doc);
+
+            // Assert
+            Assert.Equal("C", doc.SimpleDTO.StringProperty);
+            Assert.Equal("D", doc.SimpleDTO.AnotherStringProperty);
+            Assert.Equal("C", doc.InheritedDTO.StringProperty);
+            Assert.Equal("D", doc.InheritedDTO.AnotherStringProperty);
+        }
+
+        [Fact]
+        public void CopyKeepsObjectType()
+        {
+            // Arrange
+            var doc = new SimpleDTOWithNestedDTO()
+            {
+                SimpleDTO = new SimpleDTO(),
+                InheritedDTO = new InheritedDTO()
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTOWithNestedDTO>();
+            patchDoc.Copy<SimpleDTO>(o => o.InheritedDTO, o => o.SimpleDTO);
+
+            // Act
+            patchDoc.ApplyTo(doc);
+
+            // Assert
+            Assert.Equal(typeof(InheritedDTO), doc.SimpleDTO.GetType());
+        }
+
+        [Fact]
+        public void CopyBreaksObjectReference()
+        {
+            // Arrange
+            var doc = new SimpleDTOWithNestedDTO()
+            {
+                SimpleDTO = new SimpleDTO(),
+                InheritedDTO = new InheritedDTO()
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTOWithNestedDTO>();
+            patchDoc.Copy<SimpleDTO>(o => o.InheritedDTO, o => o.SimpleDTO);
+
+            // Act
+            patchDoc.ApplyTo(doc);
+
+            // Assert
+            Assert.NotSame(doc.SimpleDTO, doc.InheritedDTO);
+        }
+
+        [Fact]
         public void Move()
         {
             // Arrange
