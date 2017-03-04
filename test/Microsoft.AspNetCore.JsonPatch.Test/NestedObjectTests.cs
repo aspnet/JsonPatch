@@ -1700,7 +1700,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void CopyDeepCloneObject()
+        public void Copy_DeepClonesObject()
         {
             // Arrange
             var doc = new SimpleDTOWithNestedDTO()
@@ -1729,10 +1729,11 @@ namespace Microsoft.AspNetCore.JsonPatch
             Assert.Equal("D", doc.SimpleDTO.AnotherStringProperty);
             Assert.Equal("C", doc.InheritedDTO.StringProperty);
             Assert.Equal("D", doc.InheritedDTO.AnotherStringProperty);
+            Assert.NotSame(doc.SimpleDTO.StringProperty, doc.InheritedDTO.StringProperty);
         }
 
         [Fact]
-        public void CopyKeepsObjectType()
+        public void Copy_KeepsObjectType()
         {
             // Arrange
             var doc = new SimpleDTOWithNestedDTO()
@@ -1753,7 +1754,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void CopyBreaksObjectReference()
+        public void Copy_BreaksObjectReference()
         {
             // Arrange
             var doc = new SimpleDTOWithNestedDTO()
@@ -1827,7 +1828,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void MoveReference()
+        public void Move_KeepsObjectReference()
         {
             // Arrange
             var sDto = new SimpleDTO()
@@ -1861,7 +1862,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void MoveReferenceWithSerialization()
+        public void Move_KeepsObjectReferenceWithSerialization()
         {
             // Arrange
             var sDto = new SimpleDTO()
@@ -1947,7 +1948,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void MoveReferenceInList()
+        public void Move_KeepsObjectReferenceInList()
         {
             // Arrange
             var sDto1 = new SimpleDTO() { IntegerValue = 1 };
@@ -1978,7 +1979,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void MoveReferenceInListWithSerialization()
+        public void Move_KeepsObjectReferenceInListWithSerialization()
         {
             // Arrange
             var sDto1 = new SimpleDTO() { IntegerValue = 1 };
