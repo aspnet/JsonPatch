@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Reflection;
 using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Microsoft.AspNetCore.JsonPatch.Helpers;
 using Microsoft.AspNetCore.JsonPatch.Internal;
@@ -363,26 +362,21 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             // Get value at 'from' location and add that value to the 'path' location
             if (TryGetValue(operation.from, objectToApplyTo, operation, out propertyValue))
             {
-                if (propertyValue != null && !propertyValue.GetType().GetTypeInfo().IsValueType)
+                // Create deep copy
+                var copyResult = ConversionResultProvider.CopyTo(propertyValue, propertyValue.GetType());
+                if (copyResult.CanBeConverted)
                 {
-                    // Create deep copy
-                    var copyResult = ConversionResultProvider.ConvertTo(propertyValue, propertyValue.GetType());
-                    if (copyResult.CanBeConverted)
-                    {
-                        propertyValue = copyResult.ConvertedInstance;
-                    }
-                    else
-                    {
-                        var error = CreateOperationFailedError(objectToApplyTo, operation.path, operation, Resources.FormatCannotCopyProperty(operation.from));
-                        ErrorReporter(error);
-                        return;
-                    }
+                    Add(operation.path,
+                        copyResult.ConvertedInstance,
+                        objectToApplyTo,
+                        operation);
                 }
-
-                Add(operation.path,
-                    propertyValue,
-                    objectToApplyTo,
-                    operation);
+                else
+                {
+                    var error = CreateOperationFailedError(objectToApplyTo, operation.path, operation, Resources.FormatCannotCopyProperty(operation.from));
+                    ErrorReporter(error);
+                    return;
+                }
             }
         }
 
