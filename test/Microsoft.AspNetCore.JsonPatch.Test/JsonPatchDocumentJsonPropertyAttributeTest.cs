@@ -63,6 +63,40 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
+        public void Add_WithExpressionOnStringProperty_FallsbackToPropertyName_WhenJsonPropertyName_IsEmpty()
+        {
+            // Arrange
+            var patchDoc = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
+            patchDoc.Add(m => m.StringProperty, "Test");
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+
+            // Act
+            var deserialized =
+                JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithNoPropertyName>>(serialized);
+
+            // Assert
+            var pathToCheck = deserialized.Operations.First().path;
+            Assert.Equal("/stringproperty", pathToCheck);
+        }
+
+        [Fact]
+        public void Add_WithExpressionOnArrayProperty_FallsbackToPropertyName_WhenJsonPropertyName_IsEmpty()
+        {
+            // Arrange
+            var patchDoc = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
+            patchDoc.Add(m => m.ArrayProperty, "James");
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+
+            // Act
+            var deserialized =
+                JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithNoPropertyName>>(serialized);
+
+            // Assert
+            var pathToCheck = deserialized.Operations.First().path;
+            Assert.Equal("/arrayproperty/-", pathToCheck);
+        }
+
+        [Fact]
         public void Add_WithExpression_RespectsJsonPropertyName_WhenApplyingToDifferentlyTypedClassWithPropertyMatchingJsonPropertyName()
         {
             var patchDocToSerialize = new JsonPatchDocument<JsonPropertyDTO>();
