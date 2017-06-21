@@ -8,12 +8,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Operations
     public class OperationBaseTests
     {
         [Theory]
-        [InlineData("add", OperationType.Add)]
-        [InlineData("copy", OperationType.Copy)]
-        [InlineData("move", OperationType.Move)]
-        [InlineData("remove", OperationType.Remove)]
+        [InlineData("ADd", OperationType.Add)]
+        [InlineData("Copy", OperationType.Copy)]
+        [InlineData("mOVE", OperationType.Move)]
+        [InlineData("REMOVE", OperationType.Remove)]
         [InlineData("replace", OperationType.Replace)]
-        [InlineData("test", OperationType.Test)]
+        [InlineData("TeSt", OperationType.Test)]
         public void SetValidOperationType(string op, OperationType operationType)
         {
             // Arrange
