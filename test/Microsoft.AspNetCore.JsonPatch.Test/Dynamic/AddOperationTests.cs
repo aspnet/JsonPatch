@@ -382,7 +382,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         }
 
         [Fact]
-        public void ShouldReplacePropertyWithDifferentCase()
+        public void ShouldNotReplacePropertyWithDifferentCase()
         {
             dynamic doc = new ExpandoObject();
             doc.StringProperty = "A";
@@ -396,7 +396,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             deserialized.ApplyTo(doc);
 
-            Assert.Equal("B", doc.StringProperty);
+            Assert.Equal("A", doc.StringProperty);
         }
 
         [Fact]
