@@ -170,9 +170,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             });
             Assert.Equal(
                 string.Format(
-                    "For operation '{0}', the target location specified by path '{1}' was not found.",
-                    "add",
-                    "/DynamicProperty/OtherProperty/IntProperty"),
+                    "The target location specified by path segment '{0}' was not found.",
+                    "OtherProperty"),
                 exception.Message);
         }
 
@@ -889,9 +888,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             });
 
             Assert.Equal(
-               string.Format("For operation '{0}', the target location specified by path '{1}' was not found.",
-               "remove",
-               "/Simpledto/stringProperty"),
+               string.Format("The target location specified by path segment '{0}' was not found.",
+               "Simpledto"),
                 exception.Message);
         }
 

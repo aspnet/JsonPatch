@@ -222,5 +222,23 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             Assert.True(string.IsNullOrEmpty(message), "Expected no error message");
             Assert.IsType<PocoAdapter>(adapter);
         }
+
+        [Fact]
+        public void Visit_NullTarget_ReturnsNullAdapter()
+        {
+            // Arrange
+            var visitor = new ObjectVisitor(new ParsedPath("test"), new DefaultContractResolver());
+            IAdapter adapter = null;
+            string message = null;
+
+            // Act
+            object target = null;
+            var visitStatus = visitor.TryVisit(ref target, out adapter, out message);
+
+            // Assert
+            Assert.False(visitStatus);
+            Assert.Null(adapter);
+            Assert.Null(message);
+        }
     }
 }
