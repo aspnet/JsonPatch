@@ -126,8 +126,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private object ConvertValue(IDictionary<string, object> dictionary, string key, object newValue)
         {
-            object existingValue = null;
-            if (dictionary.TryGetValue(key, out existingValue))
+            if (dictionary.TryGetValue(key, out var existingValue))
             {
                 if (existingValue != null)
                 {

@@ -20,7 +20,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -42,7 +42,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.Test = 1;
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("NonExisting");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -64,7 +64,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             obj.Test = 1;
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -73,20 +73,18 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             deserialized.ApplyTo(obj);
 
             var cont = obj as IDictionary<string, object>;
-            object valueFromDictionary;
-
-            cont.TryGetValue("Test", out valueFromDictionary);
+            cont.TryGetValue("Test", out var valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
         [Fact]
-        public void RemovePropertyFromExpandoObjectMixedCaseThrowsPathNotFoundException()
+        public void RemoveProperty_FromExpandoObject_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic obj = new ExpandoObject();
             obj.Test = 1;
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -110,7 +108,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             obj.Test.AnotherTest = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -119,21 +117,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             deserialized.ApplyTo(obj);
 
             var cont = obj as IDictionary<string, object>;
-            object valueFromDictionary;
-
-            cont.TryGetValue("Test", out valueFromDictionary);
+            cont.TryGetValue("Test", out var valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
         [Fact]
-        public void RemoveNestedPropertyFromExpandoObjectMixedCaseThrowsPathNotFoundException()
+        public void RemoveNestedProperty_FromExpandoObject_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic obj = new ExpandoObject();
             obj.Test = new ExpandoObject();
             obj.Test.AnotherTest = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -158,7 +154,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/StringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -169,7 +165,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         }
 
         [Fact]
-        public void NestedRemoveMixedCaseThrowsPathNotFoundException()
+        public void NestedRemove_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic doc = new ExpandoObject();
             doc.SimpleDTO = new SimpleDTO()
@@ -178,7 +174,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Simpledto/stringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -205,7 +201,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/2");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -226,7 +222,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/Integerlist/2");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -247,7 +243,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/3");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -272,7 +268,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/-1");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -297,7 +293,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
