@@ -16,18 +16,17 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         [Fact]
         public void AddNewPropertyToDynamicObject()
         {
+            // Arrange
             dynamic obj = new DynamicTestObject();
             obj.Test = 1;
 
-            // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Add("NewInt", 1);
 
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
+            // Act
+            patchDoc.ApplyTo(obj);
 
-            deserialized.ApplyTo(obj);
-
+            // Assert
             Assert.Equal(1, obj.NewInt);
             Assert.Equal(1, obj.Test);
         }
@@ -35,20 +34,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         [Fact]
         public void AddNewPropertyToDynamicOjectInTypedObject()
         {
+            // Arrange
             var doc = new NestedDTO()
             {
                 DynamicProperty = new DynamicTestObject()
             };
 
-            // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Add("DynamicProperty/NewInt", 1);
+            
+            // Act
+            patchDoc.ApplyTo(doc);
 
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
-            deserialized.ApplyTo(doc);
-
+            // Assert
             Assert.Equal(1, doc.DynamicProperty.NewInt);
         }
 
@@ -64,7 +62,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Add("DynamicProperty/StringProperty", "B");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);

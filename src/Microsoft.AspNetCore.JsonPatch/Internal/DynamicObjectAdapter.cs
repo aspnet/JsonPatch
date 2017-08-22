@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json.Serialization;
+using CSharpBinder = Microsoft.CSharp.RuntimeBinder;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
@@ -51,8 +52,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             IContractResolver contractResolver,
             out string errorMessage)
         {
-            object property = null;
-            if (!TryGetDynamicObjectProperty(target, contractResolver, segment, out property, out errorMessage))
+            if (!TryGetDynamicObjectProperty(target, contractResolver, segment, out var property, out errorMessage))
             {
                 return false;
             }
@@ -83,14 +83,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             object value,
             out string errorMessage)
         {
-            object property = null;
-            if (!TryGetDynamicObjectProperty(target, contractResolver, segment, out property, out errorMessage))
+            if (!TryGetDynamicObjectProperty(target, contractResolver, segment, out var property, out errorMessage))
             {
                 return false;
             }
 
-            object convertedValue = null;
-            if (!TryConvertValue(value, property.GetType(), out convertedValue))
+            if (!TryConvertValue(value, property.GetType(), out var convertedValue))
             {
                 errorMessage = Resources.FormatInvalidValueForProperty(value);
                 return false;
@@ -112,8 +110,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             out object nextTarget,
             out string errorMessage)
         {
-            object property = null;
-            if (!TryGetDynamicObjectProperty(target, contractResolver, segment, out property, out errorMessage))
+            if (!TryGetDynamicObjectProperty(target, contractResolver, segment, out var property, out errorMessage))
             {
                 nextTarget = null;
                 return false;
@@ -130,20 +127,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             object target,
             IContractResolver contractResolver,
             string segment,
-            out object property,
+            out object value,
             out string errorMessage)
         {
             var jsonDynamicContract = contractResolver.ResolveContract(target.GetType()) as JsonDynamicContract;
 
-            var propertyName = jsonDynamicContract?.PropertyNameResolver(segment);
-
-            var binder = CSharp.RuntimeBinder.Binder.GetMember(
+            var propertyName = jsonDynamicContract.PropertyNameResolver(segment);
+            
+            var binder = CSharpBinder.Binder.GetMember(
                 CSharpBinderFlags.None,
-                propertyName ?? segment,
+                propertyName,
                 target.GetType(),
                 new List<CSharpArgumentInfo>
                 {
-                    CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
                     CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
                 });
 
@@ -151,13 +147,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             try
             {
-                property = callsite.Target(callsite, target);
+                value = callsite.Target(callsite, target);
                 errorMessage = null;
                 return true;
             }
             catch (RuntimeBinderException)
             {
-                property = null;
+                value = null;
                 errorMessage = Resources.FormatTargetLocationAtPathSegmentNotFound(segment);
                 return false;
             }
@@ -172,11 +168,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var jsonDynamicContract = contractResolver.ResolveContract(target.GetType()) as JsonDynamicContract;
 
-            var propertyName = jsonDynamicContract?.PropertyNameResolver(segment);
+            var propertyName = jsonDynamicContract.PropertyNameResolver(segment);
 
-            var binder = CSharp.RuntimeBinder.Binder.SetMember(
+            var binder = CSharpBinder.Binder.SetMember(
                 CSharpBinderFlags.None,
-                propertyName ?? segment,
+                propertyName,
                 target.GetType(),
                 new List<CSharpArgumentInfo>
                 {
