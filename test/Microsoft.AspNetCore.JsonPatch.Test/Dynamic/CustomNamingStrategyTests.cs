@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Dynamic;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Xunit;
 
@@ -20,23 +19,20 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic doc = new ExpandoObject();
-            doc.Test = 1;
+            dynamic obj = new ExpandoObject();
+            obj.Test = 1;
 
             // create patch
             var patchDoc = new JsonPatchDocument();
             patchDoc.Add("NewInt", 1);
-
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-            deserialized.ContractResolver = contractResolver;
+            patchDoc.ContractResolver = contractResolver;
 
             // Act
-            deserialized.ApplyTo(doc);
+            patchDoc.ApplyTo(obj);
 
             // Assert
-            Assert.Equal(1, doc.customNewInt);
-            Assert.Equal(1, doc.Test);
+            Assert.Equal(1, obj.customNewInt);
+            Assert.Equal(1, obj.Test);
         }
 
         [Fact]
@@ -48,22 +44,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic doc = new ExpandoObject();
-            doc.customStringProperty = "A";
-            doc.customAnotherStringProperty = "B";
+            dynamic obj = new ExpandoObject();
+            obj.customStringProperty = "A";
+            obj.customAnotherStringProperty = "B";
 
             var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("StringProperty", "AnotherStringProperty");
-
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-            deserialized.ContractResolver = contractResolver;
+            patchDoc.ContractResolver = contractResolver;
 
             // Act
-            deserialized.ApplyTo(doc);
+            patchDoc.ApplyTo(obj);
 
             // Assert
-            Assert.Equal("A", doc.customAnotherStringProperty);
+            Assert.Equal("A", obj.customAnotherStringProperty);
         }
 
         [Fact]
@@ -75,25 +68,22 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic doc = new ExpandoObject();
-            doc.customStringProperty = "A";
-            doc.customAnotherStringProperty = "B";
+            dynamic obj = new ExpandoObject();
+            obj.customStringProperty = "A";
+            obj.customAnotherStringProperty = "B";
 
             // create patch
             var patchDoc = new JsonPatchDocument();
             patchDoc.Move("StringProperty", "AnotherStringProperty");
-
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-            deserialized.ContractResolver = contractResolver;
+            patchDoc.ContractResolver = contractResolver;
 
             // Act
-            deserialized.ApplyTo(doc);
-            var cont = doc as IDictionary<string, object>;
+            patchDoc.ApplyTo(obj);
+            var cont = obj as IDictionary<string, object>;
             cont.TryGetValue("customStringProperty", out var valueFromDictionary);
 
             // Assert
-            Assert.Equal("A", doc.customAnotherStringProperty);
+            Assert.Equal("A", obj.customAnotherStringProperty);
             Assert.Null(valueFromDictionary);
         }
 
@@ -106,20 +96,17 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic doc = new ExpandoObject();
-            doc.customTest = 1;
+            dynamic obj = new ExpandoObject();
+            obj.customTest = 1;
 
             // create patch
             var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Test");
-
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-            deserialized.ContractResolver = contractResolver;
+            patchDoc.ContractResolver = contractResolver;
 
             // Act
-            deserialized.ApplyTo(doc);
-            var cont = doc as IDictionary<string, object>;
+            patchDoc.ApplyTo(obj);
+            var cont = obj as IDictionary<string, object>;
             cont.TryGetValue("customTest", out var valueFromDictionary);
 
             // Assert
@@ -135,21 +122,18 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic doc = new ExpandoObject();
-            doc.customTest = 1;
+            dynamic obj = new ExpandoObject();
+            obj.customTest = 1;
 
             var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("Test", 2);
-
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-            deserialized.ContractResolver = contractResolver;
+            patchDoc.ContractResolver = contractResolver;
 
             // Act
-            deserialized.ApplyTo(doc);
+            patchDoc.ApplyTo(obj);
 
             // Assert
-            Assert.Equal(2, doc.customTest);
+            Assert.Equal(2, obj.customTest);
         }
 
         private class TestNamingStrategy : NamingStrategy
