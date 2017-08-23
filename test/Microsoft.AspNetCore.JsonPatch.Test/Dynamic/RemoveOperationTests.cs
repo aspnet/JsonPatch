@@ -78,7 +78,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
-        public void RemovePropertyFromExpandoObjectMixedCase()
+        public void RemoveProperty_FromExpandoObject_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic obj = new ExpandoObject();
             obj.Test = 1;
@@ -90,11 +90,16 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
-            deserialized.ApplyTo(obj);
+            var exception = Assert.Throws<JsonPatchException>(() =>
+            {
+                deserialized.ApplyTo(obj);
+            });
 
-            var cont = obj as IDictionary<string, object>;
-            cont.TryGetValue("Test", out object valueFromDictionary);
-            Assert.Null(valueFromDictionary);
+            Assert.Equal(
+                string.Format(
+                    "The target location specified by path segment '{0}' was not found.",
+                    "test"),
+                exception.Message);
         }
 
         [Fact]
@@ -119,7 +124,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
-        public void RemoveNestedPropertyFromExpandoObjectMixedCase()
+        public void RemoveNestedProperty_FromExpandoObject_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic obj = new ExpandoObject();
             obj.Test = new ExpandoObject();
@@ -132,10 +137,16 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
-            deserialized.ApplyTo(obj);
-            var cont = obj as IDictionary<string, object>;
-            cont.TryGetValue("Test", out object valueFromDictionary);
-            Assert.Null(valueFromDictionary);
+            var exception = Assert.Throws<JsonPatchException>(() =>
+            {
+                deserialized.ApplyTo(obj);
+            });
+
+            Assert.Equal(
+                string.Format(
+                    "The target location specified by path segment '{0}' was not found.",
+                    "test"),
+                exception.Message);
         }
 
         [Fact]
@@ -159,24 +170,32 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
-        public void NestedRemoveMixedCase()
+        public void NestedRemove_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleObject()
+            doc.SimpleObject = new SimpleObject()
             {
                 StringProperty = "A"
             };
 
             // create patch
             var patchDoc = new JsonPatchDocument();
-            patchDoc.Remove("Simpledto/stringProperty");
+            patchDoc.Remove("Simpleobject/stringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
-            deserialized.ApplyTo(doc);
+            var exception = Assert.Throws<JsonPatchException>(() =>
+            {
+                deserialized.ApplyTo(doc);
+            });
 
-            Assert.Null(doc.SimpleDTO.StringProperty);
+            Assert.Equal(
+                string.Format(
+                    "For operation '{0}', the target location specified by path '{1}' was not found.",
+                    "remove",
+                    "/Simpleobject/stringProperty"),
+                exception.Message);
         }
 
         [Fact]
@@ -201,7 +220,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
-        public void NestedRemoveFromListMixedCase()
+        public void NestedRemoveFromList_MixedCase()
         {
             dynamic doc = new ExpandoObject();
             doc.SimpleDTO = new SimpleObject()

@@ -42,7 +42,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             var patchDoc = new JsonPatchDocument();
             patchDoc.Add("DynamicProperty/NewInt", 1);
-            
+
             // Act
             patchDoc.ApplyTo(doc);
 
@@ -765,7 +765,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
-        public void RemovePropertyFromDynamicObjectMixedCaseThrowsPathNotFoundException()
+        public void RemoveProperty_FromDynamicObject_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic obj = new DynamicTestObject();
             obj.Test = 1;
@@ -810,7 +810,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
-        public void RemoveNestedPropertyFromDynamicObjectMixedCaseThrowsPathNotFoundException()
+        public void RemoveNestedProperty_FromDynamicObject_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic obj = new DynamicTestObject();
             obj.Test = new DynamicTestObject();
@@ -856,7 +856,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
-        public void NestedRemoveMixedCaseThrowsPathNotFoundException()
+        public void NestedRemove_MixedCase_ThrowsPathNotFoundException()
         {
             dynamic doc = new DynamicTestObject();
             doc.SimpleDTO = new SimpleObject()

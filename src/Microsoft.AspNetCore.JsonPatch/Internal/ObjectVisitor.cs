@@ -60,7 +60,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
             else if (targetObject is IDynamicMetaObjectProvider)
             {
-                return new ExpandoObjectAdapter();
+                return new DynamicObjectAdapter();
             }
             else if (targetObject is IDictionary)
             {
