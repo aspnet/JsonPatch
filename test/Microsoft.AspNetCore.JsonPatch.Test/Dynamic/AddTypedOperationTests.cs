@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
+namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
     public class AddTypedOperationTests
     {
         [Fact]
         public void AddToListNegativePosition()
         {
-            var doc = new SimpleDTO()
+            var doc = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -37,11 +37,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         [Fact]
         public void AddToListInList()
         {
-            var doc = new SimpleDTOWithNestedDTO()
+            var doc = new SimpleObjectWithNestedObject()
             {
-                ListOfSimpleDTO = new List<SimpleDTO>()
+                ListOfSimpleDTO = new List<SimpleObject>()
                 {
-                     new SimpleDTO()
+                     new SimpleObject()
                      {
                          IntegerList = new List<int>() { 1, 2, 3 }
                      }
@@ -62,11 +62,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         [Fact]
         public void AddToListInListInvalidPositionTooSmall()
         {
-            var doc = new SimpleDTOWithNestedDTO()
+            var doc = new SimpleObjectWithNestedObject()
             {
-                ListOfSimpleDTO = new List<SimpleDTO>()
+                ListOfSimpleDTO = new List<SimpleObject>()
                 {
-                    new SimpleDTO()
+                    new SimpleObject()
                     {
                         IntegerList = new List<int>() { 1, 2, 3 }
                     }
@@ -92,11 +92,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         [Fact]
         public void AddToListInListInvalidPositionTooLarge()
         {
-            var doc = new SimpleDTOWithNestedDTO()
+            var doc = new SimpleObjectWithNestedObject()
             {
-                ListOfSimpleDTO = new List<SimpleDTO>()
+                ListOfSimpleDTO = new List<SimpleObject>()
                 {
-                     new SimpleDTO()
+                     new SimpleObject()
                      {
                         IntegerList = new List<int>() { 1, 2, 3 }
                      }

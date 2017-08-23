@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
+namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
     public class RemoveOperationTests
     {
@@ -73,12 +73,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             deserialized.ApplyTo(obj);
 
             var cont = obj as IDictionary<string, object>;
-            cont.TryGetValue("Test", out var valueFromDictionary);
+            cont.TryGetValue("Test", out object valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
         [Fact]
-        public void RemoveProperty_FromExpandoObject_MixedCase_ThrowsPathNotFoundException()
+        public void RemovePropertyFromExpandoObjectMixedCase()
         {
             dynamic obj = new ExpandoObject();
             obj.Test = 1;
@@ -90,14 +90,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
-            var exception = Assert.Throws<JsonPatchException>(() =>
-            {
-                deserialized.ApplyTo(obj);
-            });
-            Assert.Equal(
-                string.Format("The target location specified by path segment '{0}' was not found.",
-                "test"),
-                exception.Message);
+            deserialized.ApplyTo(obj);
+
+            var cont = obj as IDictionary<string, object>;
+            cont.TryGetValue("Test", out object valueFromDictionary);
+            Assert.Null(valueFromDictionary);
         }
 
         [Fact]
@@ -117,12 +114,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             deserialized.ApplyTo(obj);
 
             var cont = obj as IDictionary<string, object>;
-            cont.TryGetValue("Test", out var valueFromDictionary);
+            cont.TryGetValue("Test", out object valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
         [Fact]
-        public void RemoveNestedProperty_FromExpandoObject_MixedCase_ThrowsPathNotFoundException()
+        public void RemoveNestedPropertyFromExpandoObjectMixedCase()
         {
             dynamic obj = new ExpandoObject();
             obj.Test = new ExpandoObject();
@@ -135,20 +132,17 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
-            var exception = Assert.Throws<JsonPatchException>(() =>
-            {
-                deserialized.ApplyTo(obj);
-            });
-            Assert.Equal(
-                string.Format("The target location specified by path segment '{0}' was not found.", "test"),
-                exception.Message);
+            deserialized.ApplyTo(obj);
+            var cont = obj as IDictionary<string, object>;
+            cont.TryGetValue("Test", out object valueFromDictionary);
+            Assert.Null(valueFromDictionary);
         }
 
         [Fact]
         public void NestedRemove()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 StringProperty = "A"
             };
@@ -165,10 +159,10 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         }
 
         [Fact]
-        public void NestedRemove_MixedCase_ThrowsPathNotFoundException()
+        public void NestedRemoveMixedCase()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 StringProperty = "A"
             };
@@ -180,22 +174,16 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
-            var exception = Assert.Throws<JsonPatchException>(() =>
-            {
-                deserialized.ApplyTo(doc);
-            });
-            Assert.Equal(
-                string.Format("For operation '{0}', the target location specified by path '{1}' was not found.",
-                "remove",
-                "/Simpledto/stringProperty"),
-                exception.Message);
+            deserialized.ApplyTo(doc);
+
+            Assert.Null(doc.SimpleDTO.StringProperty);
         }
 
         [Fact]
         public void NestedRemoveFromList()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -216,7 +204,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromListMixedCase()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -237,7 +225,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromListInvalidPositionTooLarge()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -262,7 +250,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromListInvalidPositionTooSmall()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -287,7 +275,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromEndOfList()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };

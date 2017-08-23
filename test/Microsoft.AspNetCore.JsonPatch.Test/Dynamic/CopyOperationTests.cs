@@ -6,7 +6,7 @@ using System.Dynamic;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
+namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
     public class CopyOperationTests
     {
@@ -122,7 +122,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopy()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 StringProperty = "A",
                 AnotherStringProperty = "B"
@@ -144,7 +144,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyInList()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -164,7 +164,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyFromListToEndOfList()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -185,7 +185,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyFromListToNonList()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
@@ -205,7 +205,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyFromNonListToList()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerValue = 5,
                 IntegerList = new List<int>() { 1, 2, 3 }
@@ -225,7 +225,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyToEndOfList()
         {
             dynamic doc = new ExpandoObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerValue = 5,
                 IntegerList = new List<int>() { 1, 2, 3 }

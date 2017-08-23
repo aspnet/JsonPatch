@@ -38,8 +38,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             // Traverse until the penultimate segment to get the target object and adapter
             for (var i = 0; i < _path.Segments.Count - 1; i++)
             {
-                object next;
-                if (!adapter.TryTraverse(target, _path.Segments[i], _contractResolver, out next, out errorMessage))
+                if (!adapter.TryTraverse(target, _path.Segments[i], _contractResolver, out var next, out errorMessage))
                 {
                     adapter = null;
                     return false;

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
+namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
     public class DynamicTestObject : DynamicObject
     {
@@ -72,7 +72,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            string name = binder.Name;
+            var name = binder.Name;
 
             return TryGetValue(name, out result);
         }

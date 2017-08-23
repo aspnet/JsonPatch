@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
+namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
     public class DynamicObjectAdapterTests
     {
@@ -35,7 +35,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void AddNewPropertyToDynamicOjectInTypedObject()
         {
             // Arrange
-            var doc = new NestedDTO()
+            var doc = new NestedObject()
             {
                 DynamicProperty = new DynamicTestObject()
             };
@@ -56,7 +56,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             dynamic dynamicProperty = new DynamicTestObject();
             dynamicProperty.StringProperty = "A";
 
-            var doc = new NestedDTO()
+            var doc = new NestedObject()
             {
                 DynamicProperty = dynamicProperty
             };
@@ -80,7 +80,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.StringProperty = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Add("StringProperty", "B");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -100,7 +100,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.InBetweenFirst.InBetweenSecond.StringProperty = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Add("/InBetweenFirst/InBetweenSecond/StringProperty", "B");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -115,14 +115,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void AddResultsShouldReplaceInNestedInDynamic()
         {
             dynamic doc = new DynamicTestObject();
-            doc.Nested = new NestedDTO();
+            doc.Nested = new NestedObject();
             doc.Nested.DynamicProperty = new DynamicTestObject();
             doc.Nested.DynamicProperty.InBetweenFirst = new DynamicTestObject();
             doc.Nested.DynamicProperty.InBetweenFirst.InBetweenSecond = new DynamicTestObject();
             doc.Nested.DynamicProperty.InBetweenFirst.InBetweenSecond.StringProperty = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Add("/Nested/DynamicProperty/InBetweenFirst/InBetweenSecond/StringProperty", "B");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -150,13 +150,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             //   the root of the document, nor a member of an existing object, nor a
             //   member of an existing array.
 
-            var doc = new NestedDTO()
+            var doc = new NestedObject()
             {
                 DynamicProperty = new DynamicTestObject()
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Add("DynamicProperty/OtherProperty/IntProperty", 1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -182,7 +182,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.StringProperty = "A";
             doc.AnotherStringProperty = "B";
 
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("StringProperty", "AnotherStringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -199,7 +199,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("IntegerList/0", "IntegerList/1");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -217,7 +217,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("IntegerList/0", "IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -234,7 +234,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("IntegerList/0", "IntegerValue");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -253,7 +253,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("IntegerValue", "IntegerList/0");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -271,7 +271,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("IntegerValue", "IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -286,14 +286,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopy()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 StringProperty = "A",
                 AnotherStringProperty = "B"
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("SimpleDTO/StringProperty", "SimpleDTO/AnotherStringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -308,13 +308,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyInList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("SimpleDTO/IntegerList/0", "SimpleDTO/IntegerList/1");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -328,13 +328,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyFromListToEndOfList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("SimpleDTO/IntegerList/0", "SimpleDTO/IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -349,13 +349,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyFromListToNonList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("SimpleDTO/IntegerList/0", "SimpleDTO/IntegerValue");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -369,14 +369,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyFromNonListToList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerValue = 5,
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("SimpleDTO/IntegerValue", "SimpleDTO/IntegerList/0");
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
@@ -389,14 +389,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedCopyToEndOfList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerValue = 5,
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Copy("SimpleDTO/IntegerValue", "SimpleDTO/IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -415,7 +415,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.AnotherStringProperty = "B";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("StringProperty", "AnotherStringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -425,8 +425,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             Assert.Equal("A", doc.AnotherStringProperty);
 
-            object valueFromDictionary;
-            doc.TryGetValue("StringProperty", out valueFromDictionary);
+            doc.TryGetValue("StringProperty", out object valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
@@ -437,7 +436,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.StringProperty = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("StringProperty", "AnotherStringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -447,8 +446,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             Assert.Equal("A", doc.AnotherStringProperty);
 
-            object valueFromDictionary;
-            doc.TryGetValue("StringProperty", out valueFromDictionary);
+            doc.TryGetValue("StringProperty", out object valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
@@ -457,10 +455,10 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         {
             dynamic doc = new DynamicTestObject();
             doc.StringProperty = "A";
-            doc.SimpleDTO = new SimpleDTO() { AnotherStringProperty = "B" };
+            doc.SimpleDTO = new SimpleObject() { AnotherStringProperty = "B" };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("StringProperty", "SimpleDTO/AnotherStringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -470,8 +468,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             Assert.Equal("A", doc.SimpleDTO.AnotherStringProperty);
 
-            object valueFromDictionary;
-            doc.TryGetValue("StringProperty", out valueFromDictionary);
+            doc.TryGetValue("StringProperty", out object valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
@@ -480,10 +477,10 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         {
             dynamic doc = new DynamicTestObject();
             doc.StringProperty = "A";
-            doc.SimpleDTO = new SimpleDTO() { AnotherStringProperty = "B" };
+            doc.SimpleDTO = new SimpleObject() { AnotherStringProperty = "B" };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("SimpleDTO/AnotherStringProperty", "StringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -499,14 +496,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedMove()
         {
             dynamic doc = new DynamicTestObject();
-            doc.Nested = new SimpleDTO()
+            doc.Nested = new SimpleObject()
             {
                 StringProperty = "A",
                 AnotherStringProperty = "B"
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("Nested/StringProperty", "Nested/AnotherStringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -525,7 +522,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("IntegerList/0", "IntegerList/1");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -540,13 +537,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedMoveInList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.Nested = new SimpleDTO()
+            doc.Nested = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("Nested/IntegerList/0", "Nested/IntegerList/1");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -564,7 +561,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("IntegerList/0", "IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -578,13 +575,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedMoveFromListToEndOfList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.Nested = new SimpleDTO()
+            doc.Nested = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("Nested/IntegerList/0", "Nested/IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -601,7 +598,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("IntegerList/0", "IntegerValue");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -617,13 +614,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedMoveFomListToNonList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.Nested = new SimpleDTO()
+            doc.Nested = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("Nested/IntegerList/0", "Nested/IntegerValue");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -643,7 +640,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("IntegerValue", "IntegerList/0");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -651,8 +648,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             deserialized.ApplyTo(doc);
 
-            object valueFromDictionary;
-            doc.TryGetValue("IntegerValue", out valueFromDictionary);
+            doc.TryGetValue("IntegerValue", out object valueFromDictionary);
             Assert.Equal(0, valueFromDictionary);
 
             Assert.Equal(new List<int>() { 5, 1, 2, 3 }, doc.IntegerList);
@@ -662,14 +658,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedMoveFromNonListToList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.Nested = new SimpleDTO()
+            doc.Nested = new SimpleObject()
             {
                 IntegerValue = 5,
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("Nested/IntegerValue", "Nested/IntegerList/0");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -689,7 +685,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("IntegerValue", "IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -697,8 +693,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             deserialized.ApplyTo(doc);
 
-            object valueFromDictionary;
-            doc.TryGetValue("IntegerValue", out valueFromDictionary);
+            doc.TryGetValue("IntegerValue", out object valueFromDictionary);
             Assert.Equal(0, valueFromDictionary);
 
             Assert.Equal(new List<int>() { 1, 2, 3, 5 }, doc.IntegerList);
@@ -708,14 +703,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedMoveToEndOfList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.Nested = new SimpleDTO()
+            doc.Nested = new SimpleObject()
             {
                 IntegerValue = 5,
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Move("Nested/IntegerValue", "Nested/IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -735,7 +730,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.Test = 1;
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("NonExisting");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -757,7 +752,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             obj.Test = 1;
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -765,9 +760,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             deserialized.ApplyTo(obj);
 
-            object valueFromDictionary;
-
-            obj.TryGetValue("Test", out valueFromDictionary);
+            obj.TryGetValue("Test", out object valueFromDictionary);
             Assert.Equal(0, valueFromDictionary);
         }
 
@@ -778,7 +771,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             obj.Test = 1;
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -804,7 +797,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             obj.Test.AnotherTest = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -812,9 +805,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             deserialized.ApplyTo(obj);
 
-            object valueFromDictionary;
-
-            obj.TryGetValue("Test", out valueFromDictionary);
+            obj.TryGetValue("Test", out object valueFromDictionary);
             Assert.Null(valueFromDictionary);
         }
 
@@ -826,7 +817,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             obj.Test.AnotherTest = "A";
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("test");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -848,13 +839,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemove()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 StringProperty = "A"
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/StringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -868,13 +859,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveMixedCaseThrowsPathNotFoundException()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 StringProperty = "A"
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("Simpledto/stringProperty");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -895,13 +886,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/2");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -916,13 +907,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromListMixedCase()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/Integerlist/2");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -937,13 +928,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromListInvalidPositionTooLarge()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/3");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -962,13 +953,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromListInvalidPositionTooSmall()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/-1");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -987,13 +978,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void NestedRemoveFromEndOfList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Remove("SimpleDTO/IntegerList/-");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1012,7 +1003,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             var newGuid = Guid.NewGuid();
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("GuidValue", newGuid);
 
             // serialize & deserialize
@@ -1037,7 +1028,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
 
             var newGuid = Guid.NewGuid();
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("nestedobject/GuidValue", newGuid);
 
             // serialize & deserialize
@@ -1053,19 +1044,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void ReplaceNestedObjectTest()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTO = new SimpleDTO()
+            doc.SimpleDTO = new SimpleObject()
             {
                 IntegerValue = 5,
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
-            var newDTO = new SimpleDTO()
+            var newDTO = new SimpleObject()
             {
                 DoubleValue = 1
             };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("SimpleDTO", newDTO);
 
             // serialize & deserialize
@@ -1086,7 +1077,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("IntegerList/0", 5);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1104,7 +1095,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("IntegerList", new List<int>() { 4, 5, 6 });
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1119,13 +1110,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void ReplaceInListInList()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTOList = new List<SimpleDTO>() {
-                new SimpleDTO() {
+            doc.SimpleDTOList = new List<SimpleObject>() {
+                new SimpleObject() {
                     IntegerList = new List<int>(){1,2,3}
                 }};
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("SimpleDTOList/0/IntegerList/0", 4);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1140,13 +1131,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
         public void ReplaceInListInListAtEnd()
         {
             dynamic doc = new DynamicTestObject();
-            doc.SimpleDTOList = new List<SimpleDTO>() {
-                new SimpleDTO() {
+            doc.SimpleDTOList = new List<SimpleObject>() {
+                new SimpleObject() {
                     IntegerList = new List<int>(){1,2,3}
                 }};
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("SimpleDTOList/0/IntegerList/-", 4);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1164,7 +1155,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("IntegerList", new List<int>() { 4, 5, 6 });
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1182,7 +1173,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("IntegerList", new Collection<int>() { 4, 5, 6 });
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1200,7 +1191,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
             doc.IntegerList = new List<int>() { 1, 2, 3 };
 
             // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var patchDoc = new JsonPatchDocument();
             patchDoc.Replace("IntegerList/-", 5);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
