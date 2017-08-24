@@ -39,7 +39,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var doc = new SimpleObjectWithNestedObject()
             {
-                ListOfSimpleDTO = new List<SimpleObject>()
+                ListOfSimpleObject = new List<SimpleObject>()
                 {
                      new SimpleObject()
                      {
@@ -50,13 +50,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // create patch
             var patchDoc = new JsonPatchDocument();
-            patchDoc.Add("ListOfSimpleDTO/0/IntegerList/0", 4);
+            patchDoc.Add("ListOfSimpleObject/0/IntegerList/0", 4);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
             deserialized.ApplyTo(doc);
-            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.ListOfSimpleDTO[0].IntegerList);
+            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.ListOfSimpleObject[0].IntegerList);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var doc = new SimpleObjectWithNestedObject()
             {
-                ListOfSimpleDTO = new List<SimpleObject>()
+                ListOfSimpleObject = new List<SimpleObject>()
                 {
                     new SimpleObject()
                     {
@@ -75,7 +75,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // create patch
             var patchDoc = new JsonPatchDocument();
-            patchDoc.Add("ListOfSimpleDTO/-1/IntegerList/0", 4);
+            patchDoc.Add("ListOfSimpleObject/-1/IntegerList/0", 4);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
@@ -94,7 +94,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var doc = new SimpleObjectWithNestedObject()
             {
-                ListOfSimpleDTO = new List<SimpleObject>()
+                ListOfSimpleObject = new List<SimpleObject>()
                 {
                      new SimpleObject()
                      {
@@ -104,7 +104,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             };
             // create patch
             var patchDoc = new JsonPatchDocument();
-            patchDoc.Add("ListOfSimpleDTO/20/IntegerList/0", 4);
+            patchDoc.Add("ListOfSimpleObject/20/IntegerList/0", 4);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);

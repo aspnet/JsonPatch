@@ -15,13 +15,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         public ObjectVisitor(ParsedPath path, IContractResolver contractResolver)
         {
-            if (contractResolver == null)
-            {
-                throw new ArgumentNullException(nameof(contractResolver));
-            }
-
             _path = path;
-            _contractResolver = contractResolver;
+            _contractResolver = contractResolver ?? throw new ArgumentNullException(nameof(contractResolver));
         }
 
         public bool TryVisit(ref object target, out IAdapter adapter, out string errorMessage)

@@ -22,7 +22,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<string>(o => o.NestedObject.StringProperty, "B");
+            patchDoc.Replace(o => o.NestedObject.StringProperty, "B");
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -42,7 +42,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<string>(o => o.NestedObject.StringProperty, "B");
+            patchDoc.Replace(o => o.NestedObject.StringProperty, "B");
 
             // serialize & deserialize
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -68,7 +68,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<NestedObject>(o => o.NestedObject, newNested);
+            patchDoc.Replace(o => o.NestedObject, newNested);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -90,7 +90,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<NestedObject>(o => o.NestedObject, newNested);
+            patchDoc.Replace(o => o.NestedObject, newNested);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -116,7 +116,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<string>(o => o.SimpleObject.StringProperty, "B");
+            patchDoc.Add(o => o.SimpleObject.StringProperty, "B");
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -139,7 +139,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<string>(o => o.SimpleObject.StringProperty, "B");
+            patchDoc.Add(o => o.SimpleObject.StringProperty, "B");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -165,7 +165,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, 0);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, 0);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -188,7 +188,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, 0);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, 0);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -214,7 +214,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => (List<int>)o.SimpleObject.IntegerIList, 4, 0);
+            patchDoc.Add(o => (List<int>)o.SimpleObject.IntegerIList, 4, 0);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -237,7 +237,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => (List<int>)o.SimpleObject.IntegerIList, 4, 0);
+            patchDoc.Add(o => (List<int>)o.SimpleObject.IntegerIList, 4, 0);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -266,7 +266,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => (List<int>)o.SimpleObjectIList[0].IntegerIList, 4, 0);
+            patchDoc.Add(o => (List<int>)o.SimpleObjectIList[0].IntegerIList, 4, 0);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -292,7 +292,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => (List<int>)o.SimpleObjectIList[0].IntegerIList, 4, 0);
+            patchDoc.Add(o => (List<int>)o.SimpleObjectIList[0].IntegerIList, 4, 0);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -325,7 +325,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<string>(o => o.SimpleObjectList[0].StringProperty, "ChangedString1");
+            patchDoc.Add(o => o.SimpleObjectList[0].StringProperty, "ChangedString1");
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -355,7 +355,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<string>(o => o.SimpleObjectList[0].StringProperty, "ChangedString1");
+            patchDoc.Add(o => o.SimpleObjectList[0].StringProperty, "ChangedString1");
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -381,7 +381,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, 4);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, 4);
 
             // Act & Assert
             var exception = Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
@@ -405,7 +405,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, 4);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, 4);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -434,7 +434,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, 4);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, 4);
 
             var logger = new TestErrorLogger<SimpleObjectWithNestedObject>();
 
@@ -462,7 +462,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, -1);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, -1);
 
             // Act & Assert
             var exception = Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
@@ -485,7 +485,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, -1);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, -1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -514,7 +514,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4, -1);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4, -1);
 
             var logger = new TestErrorLogger<SimpleObjectWithNestedObject>();
 
@@ -542,7 +542,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -565,7 +565,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Add<int>(o => o.SimpleObject.IntegerList, 4);
+            patchDoc.Add(o => o.SimpleObject.IntegerList, 4);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -591,7 +591,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<string>(o => o.SimpleObject.StringProperty);
+            patchDoc.Remove(o => o.SimpleObject.StringProperty);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -614,7 +614,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<string>(o => o.SimpleObject.StringProperty);
+            patchDoc.Remove(o => o.SimpleObject.StringProperty);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -640,7 +640,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, 2);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, 2);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -663,7 +663,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, 2);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, 2);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -689,7 +689,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, 3);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, 3);
 
             // Act & Assert
             var exception = Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
@@ -712,7 +712,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, 3);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, 3);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -741,7 +741,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, 3);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, 3);
 
             var logger = new TestErrorLogger<SimpleObjectWithNestedObject>();
 
@@ -767,7 +767,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, -1);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, -1);
 
             // Act & Assert
             var exception = Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
@@ -790,7 +790,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, -1);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, -1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -819,7 +819,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Remove<int>(o => o.SimpleObject.IntegerList, -1);
+            patchDoc.Remove(o => o.SimpleObject.IntegerList, -1);
 
             var logger = new TestErrorLogger<SimpleObjectWithNestedObject>();
 
@@ -896,7 +896,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<string>(o => o.SimpleObject.StringProperty, "B");
+            patchDoc.Replace(o => o.SimpleObject.StringProperty, "B");
             patchDoc.Replace(o => o.SimpleObject.DecimalValue, 12);
 
             // Act
@@ -945,7 +945,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<string>(o => o.SimpleObject.StringProperty, "B");
+            patchDoc.Replace(o => o.SimpleObject.StringProperty, "B");
             patchDoc.Replace(o => o.SimpleObject.DecimalValue, 12);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
@@ -1012,7 +1012,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, 0);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, 0);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1035,7 +1035,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, 0);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, 0);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1061,7 +1061,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<List<int>>(o => o.SimpleObject.IntegerList, new List<int>() { 4, 5, 6 });
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, new List<int>() { 4, 5, 6 });
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1084,7 +1084,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<List<int>>(o => o.SimpleObject.IntegerList, new List<int>() { 4, 5, 6 });
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, new List<int>() { 4, 5, 6 });
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1208,7 +1208,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1231,7 +1231,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1257,7 +1257,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, 3);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, 3);
 
             // Act & Assert
             var exception = Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
@@ -1280,7 +1280,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, 3);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, 3);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1309,7 +1309,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, 3);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, 3);
 
             var logger = new TestErrorLogger<SimpleObjectWithNestedObject>();
 
@@ -1337,7 +1337,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, -1);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, -1);
 
             // Act & Assert
             var exception = Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
@@ -1360,7 +1360,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, -1);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, -1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1386,7 +1386,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Replace<int>(o => o.SimpleObject.IntegerList, 5, -1);
+            patchDoc.Replace(o => o.SimpleObject.IntegerList, 5, -1);
 
             var logger = new TestErrorLogger<SimpleObjectWithNestedObject>();
 
@@ -1415,7 +1415,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<string>(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
+            patchDoc.Copy(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1439,7 +1439,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<string>(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
+            patchDoc.Copy(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1465,7 +1465,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
+            patchDoc.Copy(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1488,7 +1488,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
+            patchDoc.Copy(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1514,7 +1514,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
+            patchDoc.Copy(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1537,7 +1537,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
+            patchDoc.Copy(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1563,7 +1563,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
+            patchDoc.Copy(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1586,7 +1586,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
+            patchDoc.Copy(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1613,7 +1613,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
+            patchDoc.Copy(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1637,7 +1637,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
+            patchDoc.Copy(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
 
@@ -1663,7 +1663,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
+            patchDoc.Copy(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1687,7 +1687,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
+            patchDoc.Copy(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1719,7 +1719,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<SimpleObject>(o => o.InheritedObject, o => o.SimpleObject);
+            patchDoc.Copy(o => o.InheritedObject, o => o.SimpleObject);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1744,7 +1744,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<SimpleObject>(o => o.InheritedObject, o => o.SimpleObject);
+            patchDoc.Copy(o => o.InheritedObject, o => o.SimpleObject);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1765,7 +1765,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Copy<SimpleObject>(o => o.InheritedObject, o => o.SimpleObject);
+            patchDoc.Copy(o => o.InheritedObject, o => o.SimpleObject);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1789,7 +1789,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<string>(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
+            patchDoc.Move(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1814,7 +1814,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<string>(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
+            patchDoc.Move(o => o.SimpleObject.StringProperty, o => o.SimpleObject.AnotherStringProperty);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1849,7 +1849,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<SimpleObject>(o => o.InheritedObject, o => o.SimpleObject);
+            patchDoc.Move(o => o.InheritedObject, o => o.SimpleObject);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1883,7 +1883,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<SimpleObject>(o => o.InheritedObject, o => o.SimpleObject);
+            patchDoc.Move(o => o.InheritedObject, o => o.SimpleObject);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1912,7 +1912,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1935,7 +1935,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList, 1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -1965,7 +1965,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<SimpleObject>(o => o.SimpleObjectList, 0, o => o.SimpleObjectList, 1);
+            patchDoc.Move(o => o.SimpleObjectList, 0, o => o.SimpleObjectList, 1);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -1996,7 +1996,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<SimpleObject>(o => o.SimpleObjectList, 0, o => o.SimpleObjectList, 1);
+            patchDoc.Move(o => o.SimpleObjectList, 0, o => o.SimpleObjectList, 1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -2026,7 +2026,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -2049,7 +2049,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerList);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -2075,7 +2075,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -2099,7 +2099,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.SimpleObject.IntegerValue);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -2126,7 +2126,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.IntegerValue);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.IntegerValue);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -2150,7 +2150,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerList, 0, o => o.IntegerValue);
+            patchDoc.Move(o => o.SimpleObject.IntegerList, 0, o => o.IntegerValue);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -2178,7 +2178,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
+            patchDoc.Move(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -2203,7 +2203,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
+            patchDoc.Move(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList, 0);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
@@ -2231,7 +2231,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
+            patchDoc.Move(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
 
             // Act
             patchDoc.ApplyTo(doc);
@@ -2256,7 +2256,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // create patch
             var patchDoc = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDoc.Move<int>(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
+            patchDoc.Move(o => o.SimpleObject.IntegerValue, o => o.SimpleObject.IntegerList);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);

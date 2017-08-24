@@ -10,13 +10,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         public int IntegerValue { get; set; }
         public NestedObject NestedObject { get; set; }
         public SimpleObject SimpleObject { get; set; }
-        public List<SimpleObject> ListOfSimpleDTO { get; set; }
+        public List<SimpleObject> ListOfSimpleObject { get; set; }
 
         public SimpleObjectWithNestedObject()
         {
             NestedObject = new NestedObject();
             SimpleObject = new SimpleObject();
-            ListOfSimpleDTO = new List<SimpleObject>();
+            ListOfSimpleObject = new List<SimpleObject>();
         }
     }
 }
