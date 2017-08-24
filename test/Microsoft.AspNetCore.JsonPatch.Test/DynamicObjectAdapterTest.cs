@@ -9,10 +9,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
     public class DynamicObjectAdapterTest
     {
-        [Theory]
-        [InlineData(1)]
-        [InlineData("new")]
-        public void TryAdd_AddsNewProperty(object value)
+        [Fact]
+        public void TryAdd_AddsNewProperty()
         {
             // Arrange
             var adapter = new DynamicObjectAdapter();
@@ -21,12 +19,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var resolver = new DefaultContractResolver();
 
             // Act
-            var status = adapter.TryAdd(target, segment, resolver, value, out string errorMessage);
+            var status = adapter.TryAdd(target, segment, resolver, "new", out string errorMessage);
 
             // Assert
             Assert.True(status);
             Assert.Null(errorMessage);
-            Assert.Equal(value, target.NewProperty);
+            Assert.Equal("new", target.NewProperty);
         }
 
         [Fact]
@@ -49,10 +47,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             Assert.Equal(value, target.List);
         }
 
-        [Theory]
-        [InlineData(1)]
-        [InlineData("new")]
-        public void TryGet_GetsPropertyValue_ForExistingProperty(object value)
+        [Fact]
+        public void TryGet_GetsPropertyValue_ForExistingProperty()
         {
             // Arrange
             var adapter = new DynamicObjectAdapter();
@@ -61,12 +57,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var resolver = new DefaultContractResolver();
 
             // Act 1
-            var addStatus = adapter.TryAdd(target, segment, resolver, value, out string errorMessage);
+            var addStatus = adapter.TryAdd(target, segment, resolver, "new", out string errorMessage);
 
             // Assert 1
             Assert.True(addStatus);
             Assert.Null(errorMessage);
-            Assert.Equal(value, target.NewProperty);
+            Assert.Equal("new", target.NewProperty);
 
             // Act 2
             var getStatus = adapter.TryGet(target, segment, resolver, out object getValue, out string getErrorMessage);
@@ -133,10 +129,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             Assert.Equal($"The target location specified by path segment '{segment}' was not found.", errorMessage);
         }
 
-        [Theory]
-        [InlineData(1)]
-        [InlineData("new")]
-        public void TryReplace_ReplacesPropertyValue(object value)
+        [Fact]
+        public void TryReplace_ReplacesPropertyValue()
         {
             // Arrange
             var adapter = new DynamicObjectAdapter();
@@ -146,12 +140,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var resolver = new DefaultContractResolver();
 
             // Act
-            var status = adapter.TryReplace(target, segment, resolver, value, out string errorMessage);
+            var status = adapter.TryReplace(target, segment, resolver, "new", out string errorMessage);
 
             // Assert
             Assert.True(status);
             Assert.Null(errorMessage);
-            Assert.Equal(value, target.NewProperty);
+            Assert.Equal("new", target.NewProperty);
         }
 
         [Fact]

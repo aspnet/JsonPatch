@@ -130,10 +130,10 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             out object value,
             out string errorMessage)
         {
-            var jsonDynamicContract = contractResolver.ResolveContract(target.GetType()) as JsonDynamicContract;
+            var jsonDynamicContract = (JsonDynamicContract)contractResolver.ResolveContract(target.GetType());
 
             var propertyName = jsonDynamicContract.PropertyNameResolver(segment);
-            
+
             var binder = CSharpBinder.Binder.GetMember(
                 CSharpBinderFlags.None,
                 propertyName,
@@ -166,7 +166,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             object value,
             out string errorMessage)
         {
-            var jsonDynamicContract = contractResolver.ResolveContract(target.GetType()) as JsonDynamicContract;
+            var jsonDynamicContract = (JsonDynamicContract)contractResolver.ResolveContract(target.GetType());
 
             var propertyName = jsonDynamicContract.PropertyNameResolver(segment);
 
