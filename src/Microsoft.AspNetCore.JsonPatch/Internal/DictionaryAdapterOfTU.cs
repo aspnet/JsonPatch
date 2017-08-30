@@ -1,13 +1,13 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class ExpandoObjectAdapter : IAdapter
+    public class DictionaryAdapter<TKey, TValue> : IAdapter
     {
         public bool TryAdd(
             object target,
@@ -18,10 +18,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
-            var dictionary = (IDictionary<string, object>)target;
+            var dictionary = (IDictionary<TKey, TValue>)target;
 
             // As per JsonPatch spec, if a key already exists, adding should replace the existing value
-            dictionary[key] = ConvertValue(dictionary, key, value);
+            var convertedKey = TryParse<TKey>(key);
+            var convertedValue = TryParse<TValue>(value);
+            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, convertedValue);
 
             errorMessage = null;
             return true;
@@ -36,10 +38,17 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
-            var dictionary = (IDictionary<string, object>)target;
+            var dictionary = (IDictionary<TKey, TValue>)target;
+            var convertedKey = TryParse<TKey>(key);
 
-            value = dictionary[key];
+            if (!dictionary.ContainsKey(convertedKey))
+            {
+                value = null;
+                errorMessage = Resources.FormatTargetLocationAtPathSegmentNotFound(segment);
+                return false;
+            }
 
+            value = dictionary[convertedKey];
             errorMessage = null;
             return true;
         }
@@ -52,16 +61,17 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
-            var dictionary = (IDictionary<string, object>)target;
+            var dictionary = (IDictionary<TKey, TValue>)target;
+            var convertedKey = TryParse<TKey>(key);
 
             // As per JsonPatch spec, the target location must exist for remove to be successful
-            if (!dictionary.ContainsKey(key))
+            if (!dictionary.ContainsKey(convertedKey))
             {
                 errorMessage = Resources.FormatTargetLocationAtPathSegmentNotFound(segment);
                 return false;
             }
 
-            dictionary.Remove(key);
+            dictionary.Remove(convertedKey);
 
             errorMessage = null;
             return true;
@@ -76,16 +86,18 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
-            var dictionary = (IDictionary<string, object>)target;
+            var dictionary = (IDictionary<TKey, TValue>)target;
+            var convertedKey = TryParse<TKey>(key);
 
             // As per JsonPatch spec, the target location must exist for remove to be successful
-            if (!dictionary.ContainsKey(key))
+            if (!dictionary.ContainsKey(convertedKey))
             {
                 errorMessage = Resources.FormatTargetLocationAtPathSegmentNotFound(segment);
                 return false;
             }
+            var convertedValue = TryParse<TValue>(value);
 
-            dictionary[key] = ConvertValue(dictionary, key, value);
+            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, convertedValue);
 
             errorMessage = null;
             return true;
@@ -98,21 +110,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             out object nextTarget,
             out string errorMessage)
         {
-            var expandoObject = target as ExpandoObject;
-            if (expandoObject == null)
-            {
-                errorMessage = null;
-                nextTarget = null;
-                return false;
-            }
-
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
-            var dictionary = (IDictionary<string, object>)expandoObject;
+            var dictionary = (IDictionary<TKey, TValue>)target;
+            var convertedKey = TryParse<TKey>(key);
 
-            if (dictionary.ContainsKey(key))
+            if (dictionary.ContainsKey(convertedKey))
             {
-                nextTarget = dictionary[key];
+                nextTarget = dictionary[convertedKey];
                 errorMessage = null;
                 return true;
             }
@@ -124,7 +129,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
         }
 
-        private object ConvertValue(IDictionary<string, object> dictionary, string key, object newValue)
+        private TValue ConvertValue(IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue)
         {
             if (dictionary.TryGetValue(key, out var existingValue))
             {
@@ -133,11 +138,50 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                     var conversionResult = ConversionResultProvider.ConvertTo(newValue, existingValue.GetType());
                     if (conversionResult.CanBeConverted)
                     {
-                        return conversionResult.ConvertedInstance;
+                        var convertedInstance = conversionResult.ConvertedInstance;
+                        return TryParse<TValue>(convertedInstance);
                     }
                 }
             }
             return newValue;
+        }
+
+        private static T TryParse<T>(string value)
+        {
+            T returnValue = default(T);
+            try
+            {
+                returnValue = (T)Convert.ChangeType(value, typeof(T));
+            }
+            catch (InvalidCastException)
+            {
+                returnValue = default(T);
+            }
+
+            return returnValue;
+        }
+
+        private static T TryParse<T>(object value)
+        {
+            T returnValue = default(T);
+
+            if (value is T)
+            {
+                returnValue = (T)value;
+            }
+            else
+            {
+                try
+                {
+                    returnValue = (T)Convert.ChangeType(value, typeof(T));
+                }
+                catch (InvalidCastException)
+                {
+                    returnValue = default(T);
+                }
+            }
+
+            return returnValue;
         }
     }
 }
