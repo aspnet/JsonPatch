@@ -21,9 +21,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var dictionary = (IDictionary<TKey, TValue>)target;
 
             // As per JsonPatch spec, if a key already exists, adding should replace the existing value
-            var convertedKey = TryParse<TKey>(key);
-            var convertedValue = TryParse<TValue>(value);
-            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, convertedValue);
+            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
+            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, value);
 
             errorMessage = null;
             return true;
@@ -39,7 +38,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = TryParse<TKey>(key);
+            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
 
             if (!dictionary.ContainsKey(convertedKey))
             {
@@ -62,7 +61,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = TryParse<TKey>(key);
+            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
 
             // As per JsonPatch spec, the target location must exist for remove to be successful
             if (!dictionary.ContainsKey(convertedKey))
@@ -87,7 +86,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = TryParse<TKey>(key);
+            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
 
             // As per JsonPatch spec, the target location must exist for remove to be successful
             if (!dictionary.ContainsKey(convertedKey))
@@ -95,9 +94,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 errorMessage = Resources.FormatTargetLocationAtPathSegmentNotFound(segment);
                 return false;
             }
-            var convertedValue = TryParse<TValue>(value);
 
-            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, convertedValue);
+            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, value);
 
             errorMessage = null;
             return true;
@@ -113,7 +111,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = TryParse<TKey>(key);
+            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
 
             if (dictionary.ContainsKey(convertedKey))
             {
@@ -129,7 +127,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
         }
 
-        private TValue ConvertValue(IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue)
+        private TValue ConvertValue(IDictionary<TKey, TValue> dictionary, TKey key, object newValue)
         {
             if (dictionary.TryGetValue(key, out var existingValue))
             {
@@ -138,50 +136,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                     var conversionResult = ConversionResultProvider.ConvertTo(newValue, existingValue.GetType());
                     if (conversionResult.CanBeConverted)
                     {
-                        var convertedInstance = conversionResult.ConvertedInstance;
-                        return TryParse<TValue>(convertedInstance);
+                        return (TValue)conversionResult.ConvertedInstance;
                     }
                 }
             }
-            return newValue;
-        }
-
-        private static T TryParse<T>(string value)
-        {
-            T returnValue = default(T);
-            try
-            {
-                returnValue = (T)Convert.ChangeType(value, typeof(T));
-            }
-            catch (InvalidCastException)
-            {
-                returnValue = default(T);
-            }
-
-            return returnValue;
-        }
-
-        private static T TryParse<T>(object value)
-        {
-            T returnValue = default(T);
-
-            if (value is T)
-            {
-                returnValue = (T)value;
-            }
-            else
-            {
-                try
-                {
-                    returnValue = (T)Convert.ChangeType(value, typeof(T));
-                }
-                catch (InvalidCastException)
-                {
-                    returnValue = default(T);
-                }
-            }
-
-            return returnValue;
+            return (TValue)newValue;
         }
     }
 }
