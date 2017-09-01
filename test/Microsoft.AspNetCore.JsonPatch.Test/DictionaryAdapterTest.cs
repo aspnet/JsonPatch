@@ -51,6 +51,36 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
+        public void GetInvalidKey_ThrowsInvalidPathSegmentException()
+        {
+            // Arrange
+            var dictionaryAdapter = new DictionaryAdapter<int, object>();
+            var resolver = new DefaultContractResolver();
+            var key = 1;
+            var dictionary = new Dictionary<int, object>();
+
+            // Act
+            var addStatus = dictionaryAdapter.TryAdd(dictionary, key.ToString(), resolver, "James", out var message);
+
+            // Assert
+            Assert.True(addStatus);
+            Assert.True(string.IsNullOrEmpty(message), "Expected no error message");
+            Assert.Single(dictionary);
+            Assert.Equal("James", dictionary[key]);
+
+            // Act
+            var guidKey = new Guid();
+            var getStatus = dictionaryAdapter.TryGet(dictionary, guidKey.ToString(), resolver, out var outValue, out message);
+
+            // Assert
+            Assert.False(getStatus);
+            Assert.Equal(
+                string.Format("The provided path segment '{0}' cannot be converted to the target type.", guidKey.ToString()),
+                message);
+            Assert.Null(outValue);
+        }
+
+        [Fact]
         public void Get_UsingCaseSensitiveKey_FailureScenario()
         {
             // Arrange
@@ -144,6 +174,27 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             Assert.True(string.IsNullOrEmpty(message), "Expected no error message");
             Assert.Single(dictionary);
             Assert.Equal("James", dictionary[guidKey]);
+        }
+
+        [Fact]
+        public void ReplacingWithInvalidValue_ThrowsInvalidValueForPropertyException()
+        {
+            // Arrange
+            var guidKey = new Guid();
+            var dictionary = new Dictionary<Guid, int>();
+            dictionary.Add(guidKey, 5);
+            var dictionaryAdapter = new DictionaryAdapter<Guid, int>();
+            var resolver = new DefaultContractResolver();
+
+            // Act
+            var replaceStatus = dictionaryAdapter.TryReplace(dictionary, guidKey.ToString(), resolver, "test", out var message);
+
+            // Assert
+            Assert.False(replaceStatus);
+            Assert.Equal(
+                string.Format("The value '{0}' is invalid for target location.", "test"),
+                message);
+            Assert.Equal(5, dictionary[guidKey]);
         }
 
         [Fact]
