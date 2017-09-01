@@ -1,7 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
 
@@ -21,9 +20,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var dictionary = (IDictionary<TKey, TValue>)target;
 
             // As per JsonPatch spec, if a key already exists, adding should replace the existing value
-            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
-            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, value);
+            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
+            if (!canConvertKey)
+            {
+                return false;
+            }
 
+            var canConvertValue = TryConvertValue(value, out var convertedValue, out errorMessage);
+            if (!canConvertValue)
+            {
+                return false;
+            }
+
+            dictionary[convertedKey] = convertedValue;
             errorMessage = null;
             return true;
         }
@@ -38,7 +47,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
+            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
+            if (!canConvertKey)
+            {
+                value = null;
+                return false;
+            }
 
             if (!dictionary.ContainsKey(convertedKey))
             {
@@ -61,7 +75,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
+            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
+            if (!canConvertKey)
+            {
+                return false;
+            }
 
             // As per JsonPatch spec, the target location must exist for remove to be successful
             if (!dictionary.ContainsKey(convertedKey))
@@ -86,7 +104,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
+            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
+            if (!canConvertKey)
+            {
+                return false;
+            }
 
             // As per JsonPatch spec, the target location must exist for remove to be successful
             if (!dictionary.ContainsKey(convertedKey))
@@ -95,7 +117,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 return false;
             }
 
-            dictionary[convertedKey] = ConvertValue(dictionary, convertedKey, value);
+            var canConvertValue = TryConvertValue(value, out var convertedValue, out errorMessage);
+            if (!canConvertValue)
+            {
+                return false;
+            }
+
+            dictionary[convertedKey] = convertedValue;
 
             errorMessage = null;
             return true;
@@ -111,7 +139,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var convertedKey = (TKey)ConversionResultProvider.ConvertTo(key, typeof(TKey)).ConvertedInstance;
+            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
+            if (!canConvertKey)
+            {
+                nextTarget = null;
+                return false;
+            }
 
             if (dictionary.ContainsKey(convertedKey))
             {
@@ -127,20 +160,38 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
         }
 
-        private TValue ConvertValue(IDictionary<TKey, TValue> dictionary, TKey key, object newValue)
+        private bool TryConvertKey(string key, out TKey convertedKey, out string errorMessage)
         {
-            if (dictionary.TryGetValue(key, out var existingValue))
+            var conversionResult = ConversionResultProvider.ConvertTo(key, typeof(TKey));
+            if (conversionResult.CanBeConverted)
             {
-                if (existingValue != null)
-                {
-                    var conversionResult = ConversionResultProvider.ConvertTo(newValue, existingValue.GetType());
-                    if (conversionResult.CanBeConverted)
-                    {
-                        return (TValue)conversionResult.ConvertedInstance;
-                    }
-                }
+                errorMessage = null;
+                convertedKey = (TKey)conversionResult.ConvertedInstance;
+                return true;
             }
-            return (TValue)newValue;
+            else
+            {
+                errorMessage = Resources.FormatInvalidValueForPath(key);
+                convertedKey = default(TKey);
+                return false;
+            }
+        }
+
+        private bool TryConvertValue(object value, out TValue convertedValue, out string errorMessage)
+        {
+            var conversionResult = ConversionResultProvider.ConvertTo(value, typeof(TValue));
+            if (conversionResult.CanBeConverted)
+            {
+                errorMessage = null;
+                convertedValue = (TValue)conversionResult.ConvertedInstance;
+                return true;
+            }
+            else
+            {
+                errorMessage = Resources.FormatInvalidValueForProperty(value);
+                convertedValue = default(TValue);
+                return false;
+            }
         }
     }
 }
