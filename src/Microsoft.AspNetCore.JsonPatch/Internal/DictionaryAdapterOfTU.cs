@@ -20,14 +20,12 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var dictionary = (IDictionary<TKey, TValue>)target;
 
             // As per JsonPatch spec, if a key already exists, adding should replace the existing value
-            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
-            if (!canConvertKey)
+            if (!TryConvertKey(key, out var convertedKey, out errorMessage))
             {
                 return false;
             }
 
-            var canConvertValue = TryConvertValue(value, out var convertedValue, out errorMessage);
-            if (!canConvertValue)
+            if (!TryConvertValue(value, out var convertedValue, out errorMessage))
             {
                 return false;
             }
@@ -47,8 +45,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
-            if (!canConvertKey)
+
+            if (!TryConvertKey(key, out var convertedKey, out errorMessage))
             {
                 value = null;
                 return false;
@@ -75,8 +73,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
-            if (!canConvertKey)
+
+            if (!TryConvertKey(key, out var convertedKey, out errorMessage))
             {
                 return false;
             }
@@ -104,8 +102,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
-            if (!canConvertKey)
+
+            if (!TryConvertKey(key, out var convertedKey, out errorMessage))
             {
                 return false;
             }
@@ -117,8 +115,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 return false;
             }
 
-            var canConvertValue = TryConvertValue(value, out var convertedValue, out errorMessage);
-            if (!canConvertValue)
+            if (!TryConvertValue(value, out var convertedValue, out errorMessage))
             {
                 return false;
             }
@@ -139,8 +136,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
             var key = contract.DictionaryKeyResolver(segment);
             var dictionary = (IDictionary<TKey, TValue>)target;
-            var canConvertKey = TryConvertKey(key, out var convertedKey, out errorMessage);
-            if (!canConvertKey)
+
+            if (!TryConvertKey(key, out var convertedKey, out errorMessage))
             {
                 nextTarget = null;
                 return false;
@@ -171,7 +168,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
             else
             {
-                errorMessage = Resources.FormatInvalidValueForPath(key);
+                errorMessage = Resources.FormatInvalidPathSegment(key);
                 convertedKey = default(TKey);
                 return false;
             }

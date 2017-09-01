@@ -31,6 +31,26 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
+        public void Add_IntKeyWhichAlreadyExists_ReplacesExistingValue()
+        {
+            // Arrange
+            var intKey = 1;
+            var dictionary = new Dictionary<int, object>();
+            dictionary[intKey] = "Mike";
+            var dictionaryAdapter = new DictionaryAdapter<int, object>();
+            var resolver = new DefaultContractResolver();
+
+            // Act
+            var addStatus = dictionaryAdapter.TryAdd(dictionary, intKey.ToString(), resolver, "James", out var message);
+
+            // Assert
+            Assert.True(addStatus);
+            Assert.True(string.IsNullOrEmpty(message), "Expected no error message");
+            Assert.Single(dictionary);
+            Assert.Equal("James", dictionary[intKey]);
+        }
+
+        [Fact]
         public void Get_UsingCaseSensitiveKey_FailureScenario()
         {
             // Arrange
@@ -107,6 +127,26 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         }
 
         [Fact]
+        public void ReplacingExistingItem_WithGuidKey()
+        {
+            // Arrange
+            var guidKey = new Guid();
+            var dictionary = new Dictionary<Guid, object>();
+            dictionary.Add(guidKey, "Mike");
+            var dictionaryAdapter = new DictionaryAdapter<Guid, object>();
+            var resolver = new DefaultContractResolver();
+
+            // Act
+            var replaceStatus = dictionaryAdapter.TryReplace(dictionary, guidKey.ToString(), resolver, "James", out var message);
+
+            // Assert
+            Assert.True(replaceStatus);
+            Assert.True(string.IsNullOrEmpty(message), "Expected no error message");
+            Assert.Single(dictionary);
+            Assert.Equal("James", dictionary[guidKey]);
+        }
+
+        [Fact]
         public void Replace_NonExistingKey_Fails()
         {
             // Arrange
@@ -158,6 +198,25 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // Act
             var removeStatus = dictionaryAdapter.TryRemove(dictionary, nameKey, resolver, out var message);
+
+            //Assert
+            Assert.True(removeStatus);
+            Assert.True(string.IsNullOrEmpty(message), "Expected no error message");
+            Assert.Empty(dictionary);
+        }
+
+        [Fact]
+        public void Remove_RemovesFromDictionary_WithUriKey()
+        {
+            // Arrange
+            var uriKey = new Uri("http://www.test.com/name");
+            var dictionary = new Dictionary<Uri, object>();
+            dictionary[uriKey] = "James";
+            var dictionaryAdapter = new DictionaryAdapter<Uri, object>();
+            var resolver = new DefaultContractResolver();
+
+            // Act
+            var removeStatus = dictionaryAdapter.TryRemove(dictionary, uriKey.ToString(), resolver, out var message);
 
             //Assert
             Assert.True(removeStatus);
