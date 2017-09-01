@@ -14,20 +14,20 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         public void Add_KeyWhichAlreadyExists_ReplacesExistingValue()
         {
             // Arrange
-            var nameKey = "Name";
-            var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
-            dictionary[nameKey] = "Mike";
-            var dictionaryAdapter = new DictionaryAdapter<string, object>();
+            var key = "Status";
+            var dictionary = new Dictionary<string, int>(StringComparer.Ordinal);
+            dictionary[key] = 404;
+            var dictionaryAdapter = new DictionaryAdapter<string, int>();
             var resolver = new DefaultContractResolver();
 
             // Act
-            var addStatus = dictionaryAdapter.TryAdd(dictionary, nameKey, resolver, "James", out var message);
+            var addStatus = dictionaryAdapter.TryAdd(dictionary, key, resolver, 200, out var message);
 
             // Assert
             Assert.True(addStatus);
             Assert.True(string.IsNullOrEmpty(message), "Expected no error message");
             Assert.Single(dictionary);
-            Assert.Equal("James", dictionary[nameKey]);
+            Assert.Equal(200, dictionary[key]);
         }
 
         [Fact]
