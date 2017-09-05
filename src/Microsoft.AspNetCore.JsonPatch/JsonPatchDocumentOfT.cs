@@ -707,7 +707,13 @@ namespace Microsoft.AspNetCore.JsonPatch
 
         private string GetPath<TProp>(Expression<Func<TModel, TProp>> expr)
         {
-            return "/" + GetPath(expr.Body, true).ToLowerInvariant();
+            var path = GetPath(expr.Body, true);
+            if (!String.IsNullOrEmpty(path))
+            {
+                path = "/" + path;
+            }
+
+            return path.ToLowerInvariant();
         }
 
         private string GetPath(Expression expr, bool firstTime)
