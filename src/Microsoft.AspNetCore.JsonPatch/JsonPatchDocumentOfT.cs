@@ -705,7 +705,8 @@ namespace Microsoft.AspNetCore.JsonPatch
             return allOps;
         }
 
-        private string GetPath<TProp>(Expression<Func<TModel, TProp>> expr)
+        // Internal for testing
+        internal string GetPath<TProp>(Expression<Func<TModel, TProp>> expr)
         {
             var path = GetPath(expr.Body, true);
             if (!String.IsNullOrEmpty(path))

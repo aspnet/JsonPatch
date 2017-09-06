@@ -19,31 +19,12 @@ namespace Microsoft.AspNetCore.JsonPatch
             patchDoc.Add(p => p, new JsonPropertyObject());
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
-            // serialized value should have "AnotherName" as path
-            // deserialize to a JsonPatchDocument<JsonPropertyWithAnotherNameDTO> to check
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameObject>>(serialized);
 
             // get path
             var pathToCheck = deserialized.Operations.First().path;
             Assert.Equal("/-", pathToCheck);
-        }
-
-        [Fact]
-        public void Add_ToRoot_OfAnObject()
-        {
-            var patchDoc = new JsonPatchDocument<JsonPropertyObject>();
-            patchDoc.Add(p => p, new JsonPropertyObject());
-
-            var serialized = JsonConvert.SerializeObject(patchDoc);
-            // serialized value should have "AnotherName" as path
-            // deserialize to a JsonPatchDocument<JsonPropertyWithAnotherNameDTO> to check
-            var deserialized =
-                JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameObject>>(serialized);
-
-            // get path
-            var pathToCheck = deserialized.Operations.First().path;
-            Assert.Equal("", pathToCheck);
         }
 
         [Fact]
