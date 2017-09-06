@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.JsonPatch
     public class JsonPatchDocumentJsonPropertyAttributeTest
     {
         [Fact]
-        public void Add_ToRoot_OfListOfObjects()
+        public void Add_ToRoot_OfListOfObjects_AtEndOfList()
         {
             var patchDoc = new JsonPatchDocument<List<JsonPropertyObject>>();
             patchDoc.Add(p => p, new JsonPropertyObject());
@@ -25,6 +25,21 @@ namespace Microsoft.AspNetCore.JsonPatch
             // get path
             var pathToCheck = deserialized.Operations.First().path;
             Assert.Equal("/-", pathToCheck);
+        }
+
+        [Fact]
+        public void Add_ToRoot_OfListOfObjects_AtGivenPosition()
+        {
+            var patchDoc = new JsonPatchDocument<List<JsonPropertyObject>>();
+            patchDoc.Add(p => p[3], new JsonPropertyObject());
+
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserialized =
+                JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameObject>>(serialized);
+
+            // get path
+            var pathToCheck = deserialized.Operations.First().path;
+            Assert.Equal("/3", pathToCheck);
         }
 
         [Fact]

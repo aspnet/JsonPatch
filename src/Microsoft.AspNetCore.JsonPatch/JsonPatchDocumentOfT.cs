@@ -93,7 +93,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         /// <summary>
-        /// At value at end of list
+        /// Add value to the end of the list
         /// </summary>
         /// <typeparam name="TProp">value type</typeparam>
         /// <param name="path">target location</param>
