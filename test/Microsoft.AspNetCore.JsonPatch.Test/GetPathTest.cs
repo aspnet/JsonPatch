@@ -1,6 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -15,7 +16,7 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocument = new JsonPatchDocument<SimpleObjectWithNestedObject>();
 
             // Act
-            var path = patchDocument.GetPath(p => p.SimpleObject.IntegerList);
+            var path = patchDocument.GetPath(p => p.SimpleObject.IntegerList, null);
 
             // Assert
             Assert.Equal("/simpleobject/integerlist", path);
@@ -28,7 +29,7 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocument = new JsonPatchDocument<int[]>();
 
             // Act
-            var path = patchDocument.GetPath(p => p[3]);
+            var path = patchDocument.GetPath(p => p[3], null);
 
             // Assert
             Assert.Equal("/3", path);
@@ -41,7 +42,7 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocument = new JsonPatchDocument<List<int>>();
 
             // Act
-            var path = patchDocument.GetPath(p => p[3]);
+            var path = patchDocument.GetPath(p => p[3], null);
 
             // Assert
             Assert.Equal("/3", path);
@@ -54,10 +55,10 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocument = new JsonPatchDocument<SimpleObject>();
 
             // Act
-            var path = patchDocument.GetPath(p => p);
+            var path = patchDocument.GetPath(p => p, null);
 
             // Assert
-            Assert.Empty(path);
+            Assert.Equal("/", path);
         }
 
         [Fact]
@@ -67,10 +68,28 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocument = new JsonPatchDocument<NestedObjectWithDerivedClass>();
 
             // Act
-            var path = patchDocument.GetPath(p => (BaseClass)p.DerivedObject);
+            var path = patchDocument.GetPath(p => (BaseClass)p.DerivedObject, null);
 
             // Assert
             Assert.Equal("/derivedobject", path);
+        }
+
+        [Fact]
+        public void ExpressionType_NotSupported()
+        {
+            // Arrange
+            var patchDocument = new JsonPatchDocument<SimpleObject>();
+
+            // Act
+            var exception = Assert.Throws<InvalidOperationException>(() =>
+            {
+                patchDocument.GetPath(p => p.IntegerValue >= 4, null);
+            });
+
+            // Assert
+            Assert.Equal(
+                string.Format("The expression '(p.IntegerValue >= 4)' is not supported."),
+                exception.Message);
         }
     }
 
