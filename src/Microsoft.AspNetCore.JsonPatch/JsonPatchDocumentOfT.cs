@@ -708,7 +708,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         // Internal for testing
         internal string GetPath<TProp>(Expression<Func<TModel, TProp>> expr, string position)
         {
-            var segments = GetPath(expr.Body, true);
+            var segments = GetPathSegments(expr.Body);
             var path = String.Join("/", segments);
             if (position != null)
             {
@@ -722,30 +722,30 @@ namespace Microsoft.AspNetCore.JsonPatch
             return "/" + path.ToLowerInvariant();
         }
 
-        private List<string> GetPath(Expression expr, bool firstTime)
+        private List<string> GetPathSegments(Expression expr)
         {
             var listOfSegments = new List<string>();
             switch (expr.NodeType)
             {
                 case ExpressionType.ArrayIndex:
                     var binaryExpression = (BinaryExpression)expr;
-                    listOfSegments.AddRange(GetPath(binaryExpression.Left, false));
+                    listOfSegments.AddRange(GetPathSegments(binaryExpression.Left));
                     listOfSegments.Add(binaryExpression.Right.ToString());
                     return listOfSegments;
 
                 case ExpressionType.Call:
                     var methodCallExpression = (MethodCallExpression)expr;
-                    listOfSegments.AddRange(GetPath(methodCallExpression.Object, false));
+                    listOfSegments.AddRange(GetPathSegments(methodCallExpression.Object));
                     listOfSegments.Add(EvaluateExpression(methodCallExpression.Arguments[0]));
                     return listOfSegments;
 
                 case ExpressionType.Convert:
-                    listOfSegments.AddRange(GetPath(((UnaryExpression)expr).Operand, false));
+                    listOfSegments.AddRange(GetPathSegments(((UnaryExpression)expr).Operand));
                     return listOfSegments;
 
                 case ExpressionType.MemberAccess:
                     var memberExpression = expr as MemberExpression;
-                    listOfSegments.AddRange(GetPath(memberExpression.Expression, false));
+                    listOfSegments.AddRange(GetPathSegments(memberExpression.Expression));
                     // Get property name, respecting JsonProperty attribute
                     listOfSegments.Add(GetPropertyNameFromMemberExpression(memberExpression));
                     return listOfSegments;
@@ -783,7 +783,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
         // Evaluates the value of the key or index which may be an int or a string, 
         // or some other expression type.
-        // The expression is converted to executable code and the resulting delegate is returned as a string.
+        // The expression is converted to a delegate and the result of executing the delegate is returned as a string.
         private static string EvaluateExpression(Expression expression)
         {
             var converted = Expression.Convert(expression, typeof(object));

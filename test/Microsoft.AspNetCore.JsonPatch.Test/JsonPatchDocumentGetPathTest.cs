@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Microsoft.AspNetCore.JsonPatch
 {
-    public class GetPathTest
+    public class JsonPatchDocumentGetPathTest
     {
         [Fact]
         public void ExpressionType_MemberAccess()
@@ -88,7 +88,7 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // Assert
             Assert.Equal(
-                string.Format("The expression '(p.IntegerValue >= 4)' is not supported."),
+                string.Format("The expression '(p.IntegerValue >= 4)' is not supported. Supported expressions include member access and indexer expressions."),
                 exception.Message);
         }
     }
