@@ -16,10 +16,10 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocument = new JsonPatchDocument<SimpleObjectWithNestedObject>();
 
             // Act
-            var path = patchDocument.GetPath(p => p.SimpleObject.IntegerList, null);
+            var path = patchDocument.GetPath(p => p.SimpleObject.IntegerList, "-");
 
             // Assert
-            Assert.Equal("/simpleobject/integerlist", path);
+            Assert.Equal("/simpleobject/integerlist/-", path);
         }
 
         [Fact]
@@ -39,17 +39,17 @@ namespace Microsoft.AspNetCore.JsonPatch
         public void ExpressionType_Call()
         {
             // Arrange
-            var patchDocument = new JsonPatchDocument<List<int>>();
+            var patchDocument = new JsonPatchDocument<Dictionary<string, int>>();
 
             // Act
-            var path = patchDocument.GetPath(p => p[3], null);
+            var path = patchDocument.GetPath(p => p["key"], "3");
 
             // Assert
-            Assert.Equal("/3", path);
+            Assert.Equal("/key/3", path);
         }
 
         [Fact]
-        public void ExpressionType_Parameter()
+        public void ExpressionType_Parameter_NullPosition()
         {
             // Arrange
             var patchDocument = new JsonPatchDocument<SimpleObject>();
@@ -59,6 +59,19 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // Assert
             Assert.Equal("/", path);
+        }
+
+        [Fact]
+        public void ExpressionType_Parameter_WithPosition()
+        {
+            // Arrange
+            var patchDocument = new JsonPatchDocument<SimpleObject>();
+
+            // Act
+            var path = patchDocument.GetPath(p => p, "-");
+
+            // Assert
+            Assert.Equal("/-", path);
         }
 
         [Fact]
