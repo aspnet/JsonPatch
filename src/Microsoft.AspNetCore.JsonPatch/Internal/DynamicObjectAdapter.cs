@@ -94,6 +94,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 return false;
             }
 
+            if (!TryRemove(target, segment, contractResolver, out errorMessage))
+            {
+                return false;
+            }
+
             if (!TrySetDynamicObjectProperty(target, contractResolver, segment, convertedValue, out errorMessage))
             {
                 return false;
