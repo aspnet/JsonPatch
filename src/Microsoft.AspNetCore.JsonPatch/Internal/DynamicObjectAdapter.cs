@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.CSharp.RuntimeBinder;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using CSharpBinder = Microsoft.CSharp.RuntimeBinder;
 
@@ -101,6 +102,36 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             errorMessage = null;
             return true;
+        }
+
+        public bool TryTest(
+            object target,
+            string segment,
+            IContractResolver contractResolver,
+            object value,
+            out string errorMessage)
+        {
+            if (!TryGetDynamicObjectProperty(target, contractResolver, segment, out var property, out errorMessage))
+            {
+                return false;
+            }
+
+            if (!TryConvertValue(value, property.GetType(), out var convertedValue))
+            {
+                errorMessage = Resources.FormatInvalidValueForProperty(value);
+                return false;
+            }
+
+            if (!(JsonConvert.SerializeObject(property) == JsonConvert.SerializeObject(convertedValue)))
+            {
+                errorMessage = Resources.FormatValueNotEqualToTestValue(property, value, segment);
+                return false;
+            }
+            else
+            {
+                errorMessage = null;
+                return true;
+            }
         }
 
         public bool TryTraverse(

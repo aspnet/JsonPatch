@@ -4,6 +4,7 @@
 using System;
 using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Adapters
@@ -362,6 +363,37 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
                     ErrorReporter(error);
                     return;
                 }
+            }
+        }
+
+        public void Test(Operation operation, object objectToApplyTo)
+        {
+            if (operation == null)
+            {
+                throw new ArgumentNullException(nameof(operation));
+            }
+
+            if (objectToApplyTo == null)
+            {
+                throw new ArgumentNullException(nameof(objectToApplyTo));
+            }
+
+            var parsedPath = new ParsedPath(operation.path);
+            var visitor = new ObjectVisitor(parsedPath, ContractResolver);
+
+            var target = objectToApplyTo;
+            if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
+            {
+                var error = CreatePathNotFoundError(objectToApplyTo, operation.path, operation, errorMessage);
+                ErrorReporter(error);
+                return;
+            }
+
+            if (!adapter.TryTest(target, parsedPath.LastSegment, ContractResolver, operation.value, out errorMessage))
+            {
+                var error = CreateOperationFailedError(objectToApplyTo, operation.path, operation, errorMessage);
+                ErrorReporter(error);
+                return;
             }
         }
 

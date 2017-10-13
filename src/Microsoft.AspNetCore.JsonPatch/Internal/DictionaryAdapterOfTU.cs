@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
@@ -124,6 +125,47 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             errorMessage = null;
             return true;
+        }
+
+        public bool TryTest(
+            object target,
+            string segment,
+            IContractResolver contractResolver,
+            object value,
+            out string errorMessage)
+        {
+            var contract = (JsonDictionaryContract)contractResolver.ResolveContract(target.GetType());
+            var key = contract.DictionaryKeyResolver(segment);
+            var dictionary = (IDictionary<TKey, TValue>)target;
+
+            if (!TryConvertKey(key, out var convertedKey, out errorMessage))
+            {
+                return false;
+            }
+
+            // As per JsonPatch spec, the target location must exist for remove to be successful
+            if (!dictionary.ContainsKey(convertedKey))
+            {
+                errorMessage = Resources.FormatTargetLocationAtPathSegmentNotFound(segment);
+                return false;
+            }
+
+            if (!TryConvertValue(value, out var convertedValue, out errorMessage))
+            {
+                return false;
+            }
+
+            var currentValue = dictionary[convertedKey];
+            if (!(JsonConvert.SerializeObject(currentValue) == JsonConvert.SerializeObject(convertedValue)))
+            {
+                errorMessage = Resources.FormatValueNotEqualToTestValue(currentValue, value, segment);
+                return false;
+            }
+            else
+            {
+                errorMessage = null;
+                return true;
+            }
         }
 
         public bool TryTraverse(

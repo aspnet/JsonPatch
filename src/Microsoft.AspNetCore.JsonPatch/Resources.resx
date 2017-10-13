@@ -171,7 +171,10 @@
   <data name="TargetLocationNotFound" xml:space="preserve">
     <value>For operation '{0}', the target location specified by path '{1}' was not found.</value>
   </data>
-  <data name="TestOperationNotSupported" xml:space="preserve">
-    <value>The test operation is not supported.</value>
+  <data name="ValueAtListPositionNotEqualToTestValue" xml:space="preserve">
+    <value>The current value '{0}' at position '{2}' is not equal to the test value '{1}'.</value>
+  </data>
+  <data name="ValueNotEqualToTestValue" xml:space="preserve">
+    <value>The current value '{0}' at path '{2}' is not equal to the test value '{1}'.</value>
   </data>
 </root>
