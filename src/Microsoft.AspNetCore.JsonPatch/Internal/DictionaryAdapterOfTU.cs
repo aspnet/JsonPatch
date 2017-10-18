@@ -2,12 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class DictionaryAdapter<TKey, TValue> : IAdapter
+    public class DictionaryAdapter<TKey, TValue> : IAdapterWithTest
     {
         public bool TryAdd(
             object target,
@@ -143,7 +142,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 return false;
             }
 
-            // As per JsonPatch spec, the target location must exist for remove to be successful
+            // As per JsonPatch spec, the target location must exist for test to be successful
             if (!dictionary.ContainsKey(convertedKey))
             {
                 errorMessage = Resources.FormatTargetLocationAtPathSegmentNotFound(segment);
@@ -156,7 +155,15 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
 
             var currentValue = dictionary[convertedKey];
-            if (!(JsonConvert.SerializeObject(currentValue) == JsonConvert.SerializeObject(convertedValue)))
+
+            // The target segment does not have an assigned value to compare the test value with
+            if (currentValue == null || string.IsNullOrEmpty(currentValue.ToString()))
+            {
+                errorMessage = Resources.FormatValueForTargetSegmentCannotBeNullOrEmpty(segment);
+                return false;
+            }
+
+            if (!Equals(currentValue, convertedValue))
             {
                 errorMessage = Resources.FormatValueNotEqualToTestValue(currentValue, value, segment);
                 return false;

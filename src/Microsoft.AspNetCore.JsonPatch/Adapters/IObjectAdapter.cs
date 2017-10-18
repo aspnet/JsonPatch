@@ -15,6 +15,5 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
         void Move(Operation operation, object objectToApplyTo);
         void Remove(Operation operation, object objectToApplyTo);
         void Replace(Operation operation, object objectToApplyTo);
-        void Test(Operation operation, object objectToApplyTo);
     }
 }

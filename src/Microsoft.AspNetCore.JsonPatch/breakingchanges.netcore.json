@@ -1,7 +1,0 @@
-[
-    {
-      "TypeId": "public interface Microsoft.AspNetCore.JsonPatch.Adapters.IObjectAdapter",
-      "MemberId": "System.Void Test(Microsoft.AspNetCore.JsonPatch.Operations.Operation operation, System.Object objectToApplyTo)",
-      "Kind": "Addition"
-    }
-  ]

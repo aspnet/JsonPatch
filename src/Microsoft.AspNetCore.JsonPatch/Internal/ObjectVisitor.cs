@@ -46,7 +46,35 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             return true;
         }
 
-        private IAdapter SelectAdapter(object targetObject)
+        public bool TryVisit(ref object target, out IAdapterWithTest adapterWithTest, out string errorMessage)
+        {
+            if (target == null)
+            {
+                adapterWithTest = null;
+                errorMessage = null;
+                return false;
+            }
+
+            adapterWithTest = SelectAdapter(target);
+
+            // Traverse until the penultimate segment to get the target object and adapter
+            for (var i = 0; i < _path.Segments.Count - 1; i++)
+            {
+                if (!adapterWithTest.TryTraverse(target, _path.Segments[i], _contractResolver, out var next, out errorMessage))
+                {
+                    adapterWithTest = null;
+                    return false;
+                }
+
+                target = next;
+                adapterWithTest = SelectAdapter(target);
+            }
+
+            errorMessage = null;
+            return true;
+        }
+
+        private IAdapterWithTest SelectAdapter(object targetObject)
         {
             var jsonContract = _contractResolver.ResolveContract(targetObject.GetType());
 
@@ -57,7 +85,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             else if (jsonContract is JsonDictionaryContract jsonDictionaryContract)
             {
                 var type = typeof(DictionaryAdapter<,>).MakeGenericType(jsonDictionaryContract.DictionaryKeyType, jsonDictionaryContract.DictionaryValueType);
-                return (IAdapter)Activator.CreateInstance(type);
+                return (IAdapterWithTest)Activator.CreateInstance(type);
             }
             else if (jsonContract is JsonDynamicContract)
             {

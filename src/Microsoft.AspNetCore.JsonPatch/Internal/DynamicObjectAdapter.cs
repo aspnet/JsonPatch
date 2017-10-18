@@ -12,7 +12,7 @@ using CSharpBinder = Microsoft.CSharp.RuntimeBinder;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class DynamicObjectAdapter : IAdapter
+    public class DynamicObjectAdapter : IAdapterWithTest
     {
         public bool TryAdd(
             object target,
@@ -122,7 +122,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 return false;
             }
 
-            if (!(JsonConvert.SerializeObject(property) == JsonConvert.SerializeObject(convertedValue)))
+            if (!Equals(property, convertedValue))
+            //if (!(JsonConvert.SerializeObject(property) == JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueNotEqualToTestValue(property, value, segment);
                 return false;

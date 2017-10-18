@@ -263,6 +263,20 @@ namespace Microsoft.AspNetCore.JsonPatch
             => string.Format(CultureInfo.CurrentCulture, GetString("TargetLocationNotFound"), p0, p1);
 
         /// <summary>
+        /// The test operation is not supported.
+        /// </summary>
+        internal static string TestOperationNotSupported
+        {
+            get => GetString("TestOperationNotSupported");
+        }
+
+        /// <summary>
+        /// The test operation is not supported.
+        /// </summary>
+        internal static string FormatTestOperationNotSupported()
+            => GetString("TestOperationNotSupported");
+
+        /// <summary>
         /// The current value '{0}' at position '{2}' is not equal to the test value '{1}'.
         /// </summary>
         internal static string ValueAtListPositionNotEqualToTestValue
@@ -275,6 +289,20 @@ namespace Microsoft.AspNetCore.JsonPatch
         /// </summary>
         internal static string FormatValueAtListPositionNotEqualToTestValue(object p0, object p1, object p2)
             => string.Format(CultureInfo.CurrentCulture, GetString("ValueAtListPositionNotEqualToTestValue"), p0, p1, p2);
+
+        /// <summary>
+        /// The value at '{0}' cannot be null or empty to perform the test operation.
+        /// </summary>
+        internal static string ValueForTargetSegmentCannotBeNullOrEmpty
+        {
+            get => GetString("ValueForTargetSegmentCannotBeNullOrEmpty");
+        }
+
+        /// <summary>
+        /// The value at '{0}' cannot be null or empty to perform the test operation.
+        /// </summary>
+        internal static string FormatValueForTargetSegmentCannotBeNullOrEmpty(object p0)
+            => string.Format(CultureInfo.CurrentCulture, GetString("ValueForTargetSegmentCannotBeNullOrEmpty"), p0);
 
         /// <summary>
         /// The current value '{0}' at path '{2}' is not equal to the test value '{1}'.

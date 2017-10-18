@@ -4,13 +4,12 @@
 using System;
 using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.JsonPatch.Operations;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Adapters
 {
     /// <inheritdoc />
-    public class ObjectAdapter : IObjectAdapter
+    public class ObjectAdapter : IObjectAdapterWithTest
     {
         /// <summary>
         /// Initializes a new instance of <see cref="ObjectAdapter"/>.
@@ -139,7 +138,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             var visitor = new ObjectVisitor(parsedPath, ContractResolver);
 
             var target = objectToApplyTo;
-            if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
+            if (!visitor.TryVisit(ref target, adapterWithTest: out var adapter, errorMessage: out var errorMessage))
             {
                 var error = CreatePathNotFoundError(objectToApplyTo, path, operation, errorMessage);
                 ErrorReporter(error);
@@ -245,7 +244,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             var visitor = new ObjectVisitor(parsedPath, ContractResolver);
 
             var target = objectToApplyTo;
-            if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
+            if (!visitor.TryVisit(ref target, adapterWithTest: out var adapter, errorMessage: out var errorMessage))
             {
                 var error = CreatePathNotFoundError(objectToApplyTo, path, operationToReport, errorMessage);
                 ErrorReporter(error);
@@ -296,7 +295,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             var visitor = new ObjectVisitor(parsedPath, ContractResolver);
 
             var target = objectToApplyTo;
-            if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
+            if (!visitor.TryVisit(ref target, adapterWithTest: out var adapter, errorMessage: out var errorMessage))
             {
                 var error = CreatePathNotFoundError(objectToApplyTo, operation.path, operation, errorMessage);
                 ErrorReporter(error);
@@ -366,6 +365,24 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             }
         }
 
+        /// <summary>
+        /// The "test" operation tests that a value at the target location
+        /// is equal to a specified value.
+        /// 
+        /// The operation object MUST contain a "value" member that conveys the 
+        /// value to be compared to the target location's value.
+        /// 
+        /// The target location MUST be equal to the "value" value for the 
+        /// operation to be considered successful.
+        /// 
+        /// Also, note that ordering of the serialization of object members 
+        /// is not significant.
+        /// 
+        /// For example:
+        /// { "op": "test", "path": "/a/b/c", "value": "foo" }
+        /// </summary>
+        /// <param name="operation">The test operation.</param>
+        /// <param name="objectToApplyTo">Object to apply the operation to.</param>
         public void Test(Operation operation, object objectToApplyTo)
         {
             if (operation == null)
@@ -382,7 +399,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             var visitor = new ObjectVisitor(parsedPath, ContractResolver);
 
             var target = objectToApplyTo;
-            if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
+            if (!visitor.TryVisit(ref target, adapterWithTest: out var adapter, errorMessage: out var errorMessage))
             {
                 var error = CreatePathNotFoundError(objectToApplyTo, operation.path, operation, errorMessage);
                 ErrorReporter(error);
@@ -424,7 +441,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
             var visitor = new ObjectVisitor(parsedPath, ContractResolver);
 
             var target = objectToGetValueFrom;
-            if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
+            if (!visitor.TryVisit(ref target, adapterWithTest: out var adapter, errorMessage: out var errorMessage))
             {
                 var error = CreatePathNotFoundError(objectToGetValueFrom, fromLocation, operation, errorMessage);
                 ErrorReporter(error);
