@@ -177,7 +177,6 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             var currentValue = list[positionInfo.Index];
             if (!Equals(currentValue, convertedValue))
-            //if (!(JsonConvert.SerializeObject(currentValue) == JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueAtListPositionNotEqualToTestValue(currentValue, value, positionInfo.Index);
                 return false;

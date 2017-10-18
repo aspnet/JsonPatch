@@ -123,7 +123,6 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
 
             if (!Equals(property, convertedValue))
-            //if (!(JsonConvert.SerializeObject(property) == JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueNotEqualToTestValue(property, value, segment);
                 return false;

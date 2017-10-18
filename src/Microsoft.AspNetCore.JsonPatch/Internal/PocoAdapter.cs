@@ -161,7 +161,6 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             var currentValue = jsonProperty.ValueProvider.GetValue(target);
             if (!Equals(currentValue, convertedValue))
-            //if (!(JsonConvert.SerializeObject(currentValue) == JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueNotEqualToTestValue(currentValue, value, segment);
                 return false;
