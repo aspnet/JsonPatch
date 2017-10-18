@@ -74,47 +74,15 @@ namespace Microsoft.AspNetCore.JsonPatch.Operations
                     adapter.Copy(this, objectToApplyTo);
                     break;
                 case OperationType.Test:
-                    throw new JsonPatchException(new JsonPatchError(objectToApplyTo, this, Resources.TestOperationNotSupported));
-                case OperationType.Invalid:
-                    throw new JsonPatchException(
-                        Resources.FormatInvalidJsonPatchOperation(op), innerException: null);
-                default:
-                    break;
-            }
-        }
-
-        public void Apply(TModel objectToApplyTo, IObjectAdapterWithTest adapter)
-        {
-            if (objectToApplyTo == null)
-            {
-                throw new ArgumentNullException(nameof(objectToApplyTo));
-            }
-
-            if (adapter == null)
-            {
-                throw new ArgumentNullException(nameof(adapter));
-            }
-
-            switch (OperationType)
-            {
-                case OperationType.Add:
-                    adapter.Add(this, objectToApplyTo);
-                    break;
-                case OperationType.Remove:
-                    adapter.Remove(this, objectToApplyTo);
-                    break;
-                case OperationType.Replace:
-                    adapter.Replace(this, objectToApplyTo);
-                    break;
-                case OperationType.Move:
-                    adapter.Move(this, objectToApplyTo);
-                    break;
-                case OperationType.Copy:
-                    adapter.Copy(this, objectToApplyTo);
-                    break;
-                case OperationType.Test:
-                    adapter.Test(this, objectToApplyTo);
-                    break;
+                    if (adapter is IObjectAdapterWithTest adapterWithTest)
+                    {
+                        adapterWithTest.Test(this, objectToApplyTo);
+                        break;
+                    }
+                    else
+                    {
+                        throw new JsonPatchException(new JsonPatchError(objectToApplyTo, this, Resources.TestOperationNotSupported));
+                    }
                 case OperationType.Invalid:
                     throw new JsonPatchException(
                         Resources.FormatInvalidJsonPatchOperation(op), innerException: null);

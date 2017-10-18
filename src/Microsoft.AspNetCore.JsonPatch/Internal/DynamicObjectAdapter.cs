@@ -12,7 +12,7 @@ using CSharpBinder = Microsoft.CSharp.RuntimeBinder;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class DynamicObjectAdapter : IAdapterWithTest
+    public class DynamicObjectAdapter : IAdapter
     {
         public bool TryAdd(
             object target,

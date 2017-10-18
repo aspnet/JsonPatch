@@ -6,7 +6,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class DictionaryAdapter<TKey, TValue> : IAdapterWithTest
+    public class DictionaryAdapter<TKey, TValue> : IAdapter
     {
         public bool TryAdd(
             object target,

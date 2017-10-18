@@ -49,7 +49,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultContractResolver());
 
             // Act
-            var visitStatus = visitor.TryVisit(ref targetObject, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
 
             // Assert
             Assert.True(visitStatus);
@@ -82,7 +82,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultContractResolver());
 
             // Act
-            var visitStatus = visitor.TryVisit(ref targetObject, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
 
             // Assert
             Assert.True(visitStatus);
@@ -112,7 +112,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var visitor = new ObjectVisitor(new ParsedPath(path), contractResolver);
 
             // Act
-            var visitStatus = visitor.TryVisit(ref targetObject, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
 
             // Assert
             Assert.True(visitStatus);
@@ -144,7 +144,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             var visitor = new ObjectVisitor(new ParsedPath(path), new DefaultContractResolver());
 
             // Act
-            var visitStatus = visitor.TryVisit(ref targetObject, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
 
             // Assert
             Assert.True(visitStatus);
@@ -164,7 +164,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             object targetObject = automobileDepartment;
 
             // Act
-            var visitStatus = visitor.TryVisit(ref targetObject, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
 
             // Assert
             Assert.False(visitStatus);
@@ -184,7 +184,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             object targetObject = automobileDepartment;
 
             // Act
-            var visitStatus = visitor.TryVisit(ref targetObject, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
 
             // Assert
             Assert.False(visitStatus);
@@ -203,7 +203,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             object targetObject = model;
 
             // Act
-            var visitStatus = visitor.TryVisit(ref targetObject, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref targetObject, out var adapter, out var message);
 
             // Assert
             Assert.True(visitStatus);
@@ -219,7 +219,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // Act
             object target = null;
-            var visitStatus = visitor.TryVisit(ref target, adapterWithTest: out var adapter, errorMessage: out var message);
+            var visitStatus = visitor.TryVisit(ref target, out var adapter, out var message);
 
             // Assert
             Assert.False(visitStatus);

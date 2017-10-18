@@ -9,7 +9,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class PocoAdapter : IAdapterWithTest
+    public class PocoAdapter : IAdapter
     {
         public bool TryAdd(
             object target,

@@ -231,30 +231,6 @@ namespace Microsoft.AspNetCore.JsonPatch
             }
         }
 
-        /// <summary>
-        /// Apply this JsonPatchDocument
-        /// </summary>
-        /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
-        /// <param name="adapter">IObjectAdapterWithTest instance to use when applying</param>
-        public void ApplyTo(object objectToApplyTo, IObjectAdapterWithTest adapter)
-        {
-            if (objectToApplyTo == null)
-            {
-                throw new ArgumentNullException(nameof(objectToApplyTo));
-            }
-
-            if (adapter == null)
-            {
-                throw new ArgumentNullException(nameof(adapter));
-            }
-
-            // apply each operation in order
-            foreach (var op in Operations)
-            {
-                op.Apply(objectToApplyTo, adapter);
-            }
-        }
-
         IList<Operation> IJsonPatchDocument.GetOperations()
         {
             var allOps = new List<Operation>();

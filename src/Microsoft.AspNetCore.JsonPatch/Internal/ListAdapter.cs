@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class ListAdapter : IAdapterWithTest
+    public class ListAdapter : IAdapter
     {
         public bool TryAdd(
             object target,
