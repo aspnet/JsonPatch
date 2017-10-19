@@ -756,19 +756,35 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
         }
 
         [Fact]
+        public void DeserializationMustFailWithEnvelope_ForSimpleObject()
+        {
+            // Arrange
+            var serialized = "{\"Operations\": [{ \"op\": \"replace\", \"path\": \"/title\", \"value\": \"New Title\"}]}";
+
+            // Act & Assert
+            var exception = Assert.Throws<JsonSerializationException>(() =>
+            {
+                var deserialized
+                    = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObject>>(serialized);
+            });
+
+            Assert.Equal("The JsonPatchDocument was malformed and could not be parsed.", exception.Message);
+        }
+
+        [Fact]
         public void DeserializationMustFailWithEnvelope()
         {
             // Arrange
             var serialized = "{\"Operations\": [{ \"op\": \"replace\", \"path\": \"/title\", \"value\": \"New Title\"}]}";
 
             // Act & Assert
-            var exception = Assert.Throws<JsonPatchException>(() =>
+            var exception = Assert.Throws<JsonSerializationException>(() =>
             {
                 var deserialized
-                    = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObject>>(serialized);
+                    = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
             });
 
-            Assert.Equal("The type 'JsonPatchDocument`1' was malformed and could not be parsed.", exception.Message);
+            Assert.Equal("The JsonPatchDocument was malformed and could not be parsed.", exception.Message);
         }
 
         [Fact]
