@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Extensions.Internal;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
@@ -176,7 +177,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
 
             var currentValue = list[positionInfo.Index];
-            if (!Equals(currentValue, convertedValue))
+            if (!JToken.DeepEquals(JsonConvert.SerializeObject(currentValue), JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueAtListPositionNotEqualToTestValue(currentValue, value, positionInfo.Index);
                 return false;

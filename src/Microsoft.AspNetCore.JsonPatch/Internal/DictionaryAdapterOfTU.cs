@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
@@ -163,7 +165,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 return false;
             }
 
-            if (!Equals(currentValue, convertedValue))
+            if (!JToken.DeepEquals(JsonConvert.SerializeObject(currentValue), JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueNotEqualToTestValue(currentValue, value, segment);
                 return false;

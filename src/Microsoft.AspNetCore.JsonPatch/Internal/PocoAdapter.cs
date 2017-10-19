@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
@@ -160,7 +161,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             }
 
             var currentValue = jsonProperty.ValueProvider.GetValue(target);
-            if (!Equals(currentValue, convertedValue))
+            if (!JToken.DeepEquals(JsonConvert.SerializeObject(currentValue), JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueNotEqualToTestValue(currentValue, value, segment);
                 return false;

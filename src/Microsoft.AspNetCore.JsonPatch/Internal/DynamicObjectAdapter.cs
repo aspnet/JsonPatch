@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using CSharpBinder = Microsoft.CSharp.RuntimeBinder;
 
@@ -122,7 +123,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 return false;
             }
 
-            if (!Equals(property, convertedValue))
+            if (!JToken.DeepEquals(JsonConvert.SerializeObject(property), JsonConvert.SerializeObject(convertedValue)))
             {
                 errorMessage = Resources.FormatValueNotEqualToTestValue(property, value, segment);
                 return false;
