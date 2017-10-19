@@ -35,16 +35,16 @@ namespace Microsoft.AspNetCore.JsonPatch
         {
             //Adding to a Nonexistent Target
             //
-            //   An example target JSON targetObjectument:
+            //   An example target JSON document:
             //   { "foo": "bar" }
-            //   A JSON Patch targetObjectument:
+            //   A JSON Patch document:
             //   [
             //        { "op": "add", "path": "/baz/bat", "value": "qux" }
             //      ]
-            //   This JSON Patch targetObjectument, applied to the target JSON targetObjectument above,
+            //   This JSON Patch document, applied to the target JSON document above,
             //   would result in an error (therefore, it would not be applied),
             //   because the "add" operation's target location that references neither
-            //   the root of the targetObjectument, nor a member of an existing object, nor a
+            //   the root of the document, nor a member of an existing object, nor a
             //   member of an existing array.
 
             // Arrange

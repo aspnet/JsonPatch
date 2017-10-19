@@ -99,8 +99,6 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocToSerialize = new JsonPatchDocument<JsonPropertyObject>();
             patchDocToSerialize.Add(p => p.Name, "John");
 
-            // the patchtargetObject will deserialize to "anothername".  We should thus be able to apply
-            // it to a class that HAS that other property name.
             var targetObject = new JsonPropertyWithAnotherNameObject()
             {
                 AnotherName = "InitialValue"
@@ -121,10 +119,6 @@ namespace Microsoft.AspNetCore.JsonPatch
         {
             var patchDocToSerialize = new JsonPatchDocument<JsonPropertyObject>();
             patchDocToSerialize.Add(p => p.Name, "John");
-
-            // the patchtargetObject will deserialize to "anothername".  As JsonPropertyDTO has
-            // a JsonProperty signifying that "Name" should be deseriallized from "AnotherName",
-            // we should be able to apply the patchDocument.
 
             var targetObject = new JsonPropertyObject()
             {
