@@ -280,13 +280,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             // Arrange
             var key = "Name";
-            var dictionary = new Dictionary<string, object>();
-            dictionary[key] = "James";
-            var dictionaryAdapter = new DictionaryAdapter<string, object>();
+            var dictionary = new Dictionary<string, List<object>>();
+            var value = new List<object>()
+            {
+                "James",
+                2,
+                new Customer("James", 25)
+            };
+            dictionary[key] = value;
+            var dictionaryAdapter = new DictionaryAdapter<string, List<object>>();
             var resolver = new DefaultContractResolver();
 
             // Act
-            var testStatus = dictionaryAdapter.TryTest(dictionary, key, resolver, "James", out var message);
+            var testStatus = dictionaryAdapter.TryTest(dictionary, key, resolver, value, out var message);
 
             //Assert
             Assert.True(testStatus);

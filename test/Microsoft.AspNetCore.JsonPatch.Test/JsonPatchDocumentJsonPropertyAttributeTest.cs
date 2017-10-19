@@ -15,10 +15,10 @@ namespace Microsoft.AspNetCore.JsonPatch
         [Fact]
         public void Add_ToRoot_OfListOfObjects_AtEndOfList()
         {
-            var patchDoc = new JsonPatchDocument<List<JsonPropertyObject>>();
-            patchDoc.Add(p => p, new JsonPropertyObject());
+            var patchDocument = new JsonPatchDocument<List<JsonPropertyObject>>();
+            patchDocument.Add(p => p, new JsonPropertyObject());
 
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var serialized = JsonConvert.SerializeObject(patchDocument);
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameObject>>(serialized);
 
@@ -30,10 +30,10 @@ namespace Microsoft.AspNetCore.JsonPatch
         [Fact]
         public void Add_ToRoot_OfListOfObjects_AtGivenPosition()
         {
-            var patchDoc = new JsonPatchDocument<List<JsonPropertyObject>>();
-            patchDoc.Add(p => p[3], new JsonPropertyObject());
+            var patchDocument = new JsonPatchDocument<List<JsonPropertyObject>>();
+            patchDocument.Add(p => p[3], new JsonPropertyObject());
 
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var serialized = JsonConvert.SerializeObject(patchDocument);
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameObject>>(serialized);
 
@@ -45,10 +45,10 @@ namespace Microsoft.AspNetCore.JsonPatch
         [Fact]
         public void Add_WithExpression_RespectsJsonPropertyName_ForModelProperty()
         {
-            var patchDoc = new JsonPatchDocument<JsonPropertyObject>();
-            patchDoc.Add(p => p.Name, "John");
+            var patchDocument = new JsonPatchDocument<JsonPropertyObject>();
+            patchDocument.Add(p => p.Name, "John");
 
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var serialized = JsonConvert.SerializeObject(patchDocument);
             // serialized value should have "AnotherName" as path
             // deserialize to a JsonPatchDocument<JsonPropertyWithAnotherNameDTO> to check
             var deserialized =
@@ -63,9 +63,9 @@ namespace Microsoft.AspNetCore.JsonPatch
         public void Add_WithExpressionOnStringProperty_FallsbackToPropertyName_WhenJsonPropertyName_IsEmpty()
         {
             // Arrange
-            var patchDoc = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
-            patchDoc.Add(m => m.StringProperty, "Test");
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var patchDocument = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
+            patchDocument.Add(m => m.StringProperty, "Test");
+            var serialized = JsonConvert.SerializeObject(patchDocument);
 
             // Act
             var deserialized =
@@ -80,9 +80,9 @@ namespace Microsoft.AspNetCore.JsonPatch
         public void Add_WithExpressionOnArrayProperty_FallsbackToPropertyName_WhenJsonPropertyName_IsEmpty()
         {
             // Arrange
-            var patchDoc = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
-            patchDoc.Add(m => m.ArrayProperty, "James");
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var patchDocument = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
+            patchDocument.Add(m => m.ArrayProperty, "James");
+            var serialized = JsonConvert.SerializeObject(patchDocument);
 
             // Act
             var deserialized =
@@ -99,9 +99,9 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocToSerialize = new JsonPatchDocument<JsonPropertyObject>();
             patchDocToSerialize.Add(p => p.Name, "John");
 
-            // the patchdoc will deserialize to "anothername".  We should thus be able to apply
+            // the patchtargetObject will deserialize to "anothername".  We should thus be able to apply
             // it to a class that HAS that other property name.
-            var doc = new JsonPropertyWithAnotherNameObject()
+            var targetObject = new JsonPropertyWithAnotherNameObject()
             {
                 AnotherName = "InitialValue"
             };
@@ -111,9 +111,9 @@ namespace Microsoft.AspNetCore.JsonPatch
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithAnotherNameObject>>
                 (serialized);
 
-            deserialized.ApplyTo(doc);
+            deserialized.ApplyTo(targetObject);
 
-            Assert.Equal("John", doc.AnotherName);
+            Assert.Equal("John", targetObject.AnotherName);
         }
 
         [Fact]
@@ -122,11 +122,11 @@ namespace Microsoft.AspNetCore.JsonPatch
             var patchDocToSerialize = new JsonPatchDocument<JsonPropertyObject>();
             patchDocToSerialize.Add(p => p.Name, "John");
 
-            // the patchdoc will deserialize to "anothername".  As JsonPropertyDTO has
+            // the patchtargetObject will deserialize to "anothername".  As JsonPropertyDTO has
             // a JsonProperty signifying that "Name" should be deseriallized from "AnotherName",
-            // we should be able to apply the patchDoc.
+            // we should be able to apply the patchDocument.
 
-            var doc = new JsonPropertyObject()
+            var targetObject = new JsonPropertyObject()
             {
                 Name = "InitialValue"
             };
@@ -136,15 +136,15 @@ namespace Microsoft.AspNetCore.JsonPatch
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyObject>>
                 (serialized);
 
-            deserialized.ApplyTo(doc);
+            deserialized.ApplyTo(targetObject);
 
-            Assert.Equal("John", doc.Name);
+            Assert.Equal("John", targetObject.Name);
         }
 
         [Fact]
         public void Add_OnApplyFromJson_RespectsJsonPropertyNameOnJsonDocument()
         {
-            var doc = new JsonPropertyObject()
+            var targetObject = new JsonPropertyObject()
             {
                 Name = "InitialValue"
             };
@@ -154,15 +154,15 @@ namespace Microsoft.AspNetCore.JsonPatch
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyObject>>(serialized);
 
-            deserialized.ApplyTo(doc);
+            deserialized.ApplyTo(targetObject);
 
-            Assert.Equal("Kevin", doc.Name);
+            Assert.Equal("Kevin", targetObject.Name);
         }
 
         [Fact]
         public void Remove_OnApplyFromJson_RespectsJsonPropertyNameOnJsonDocument()
         {
-            var doc = new JsonPropertyObject()
+            var targetObject = new JsonPropertyObject()
             {
                 Name = "InitialValue"
             };
@@ -172,15 +172,15 @@ namespace Microsoft.AspNetCore.JsonPatch
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyObject>>(serialized);
 
-            deserialized.ApplyTo(doc);
+            deserialized.ApplyTo(targetObject);
 
-            Assert.Null(doc.Name);
+            Assert.Null(targetObject.Name);
         }
 
         [Fact]
         public void Add_OnApplyFromJson_RespectsInheritedJsonPropertyNameOnJsonDocument()
         {
-            var doc = new JsonPropertyWithInheritanceObject()
+            var targetObject = new JsonPropertyWithInheritanceObject()
             {
                 Name = "InitialName"
             };
@@ -190,18 +190,18 @@ namespace Microsoft.AspNetCore.JsonPatch
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyWithInheritanceObject>>(serialized);
 
-            deserialized.ApplyTo(doc);
+            deserialized.ApplyTo(targetObject);
 
-            Assert.Equal("Kevin", doc.Name);
+            Assert.Equal("Kevin", targetObject.Name);
         }
 
         [Fact]
         public void Add_WithExpression_RespectsJsonPropertyName_ForInheritedModelProperty()
         {
-            var patchDoc = new JsonPatchDocument<JsonPropertyWithInheritanceObject>();
-            patchDoc.Add(p => p.Name, "John");
+            var patchDocument = new JsonPatchDocument<JsonPropertyWithInheritanceObject>();
+            patchDocument.Add(p => p.Name, "John");
 
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var serialized = JsonConvert.SerializeObject(patchDocument);
             // serialized value should have "AnotherName" as path
             // deserialize to a JsonPatchDocument<JsonPropertyWithAnotherNameDTO> to check
             var deserialized =
@@ -215,7 +215,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         [Fact]
         public void Add_OnApplyFromJson_EscapingHandledOnComplexJsonPropertyNameOnJsonDocument()
         {
-            var doc = new JsonPropertyComplexNameObject()
+            var targetObject = new JsonPropertyComplexNameObject()
             {
                 FooSlashBars = "InitialName",
                 FooSlashTilde = new SimpleObject
@@ -229,19 +229,19 @@ namespace Microsoft.AspNetCore.JsonPatch
             var deserialized =
                 JsonConvert.DeserializeObject<JsonPatchDocument<JsonPropertyComplexNameObject>>(serialized);
 
-            deserialized.ApplyTo(doc);
+            deserialized.ApplyTo(targetObject);
 
-            Assert.Equal("Kevin", doc.FooSlashBars);
-            Assert.Equal("Final Value", doc.FooSlashTilde.StringProperty);
+            Assert.Equal("Kevin", targetObject.FooSlashBars);
+            Assert.Equal("Final Value", targetObject.FooSlashTilde.StringProperty);
         }
 
         [Fact]
         public void Move_WithExpression_FallsbackToPropertyName_WhenJsonPropertyName_IsEmpty()
         {
             // Arrange
-            var patchDoc = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
-            patchDoc.Move(m => m.StringProperty, m => m.StringProperty2);
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var patchDocument = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
+            patchDocument.Move(m => m.StringProperty, m => m.StringProperty2);
+            var serialized = JsonConvert.SerializeObject(patchDocument);
 
             // Act
             var deserialized =
@@ -258,10 +258,10 @@ namespace Microsoft.AspNetCore.JsonPatch
         public void Add_WithExpression_AndCustomContractResolver_UsesPropertyName_SetByContractResolver()
         {
             // Arrange
-            var patchDoc = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
-            patchDoc.ContractResolver = new CustomContractResolver();
-            patchDoc.Add(m => m.SSN, "123-45-6789");
-            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var patchDocument = new JsonPatchDocument<JsonPropertyWithNoPropertyName>();
+            patchDocument.ContractResolver = new CustomContractResolver();
+            patchDocument.Add(m => m.SSN, "123-45-6789");
+            var serialized = JsonConvert.SerializeObject(patchDocument);
 
             // Act
             var deserialized =

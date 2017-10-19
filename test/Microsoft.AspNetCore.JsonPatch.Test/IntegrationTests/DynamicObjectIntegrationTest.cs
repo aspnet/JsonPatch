@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Internal
+namespace Microsoft.AspNetCore.JsonPatch
 {
-    public class DynamicObjectTest
+    public class DynamicObjectIntegrationTest
     {
         [Fact]
         public void AddResults_ShouldReplaceExistingPropertyValue_InNestedDynamicObject()
@@ -20,11 +20,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             dynamicTestObject.Nested.DynamicProperty.InBetweenFirst.InBetweenSecond = new DynamicTestObject();
             dynamicTestObject.Nested.DynamicProperty.InBetweenFirst.InBetweenSecond.StringProperty = "A";
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Add("/Nested/DynamicProperty/InBetweenFirst/InBetweenSecond/StringProperty", "B");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Add("/Nested/DynamicProperty/InBetweenFirst/InBetweenSecond/StringProperty", "B");
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
 
             // Assert
             Assert.Equal("B", dynamicTestObject.Nested.DynamicProperty.InBetweenFirst.InBetweenSecond.StringProperty);
@@ -35,16 +35,16 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
         {
             //Adding to a Nonexistent Target
             //
-            //   An example target JSON document:
+            //   An example target JSON targetObjectument:
             //   { "foo": "bar" }
-            //   A JSON Patch document:
+            //   A JSON Patch targetObjectument:
             //   [
             //        { "op": "add", "path": "/baz/bat", "value": "qux" }
             //      ]
-            //   This JSON Patch document, applied to the target JSON document above,
+            //   This JSON Patch targetObjectument, applied to the target JSON targetObjectument above,
             //   would result in an error (therefore, it would not be applied),
             //   because the "add" operation's target location that references neither
-            //   the root of the document, nor a member of an existing object, nor a
+            //   the root of the targetObjectument, nor a member of an existing object, nor a
             //   member of an existing array.
 
             // Arrange
@@ -53,13 +53,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 DynamicProperty = new DynamicTestObject()
             };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Add("DynamicProperty/OtherProperty/IntProperty", 1);
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Add("DynamicProperty/OtherProperty/IntProperty", 1);
 
             // Act
             var exception = Assert.Throws<JsonPatchException>(() =>
             {
-                patchDoc.ApplyTo(nestedObject);
+                patchDocument.ApplyTo(nestedObject);
             });
 
             // Assert
@@ -79,11 +79,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             dynamicTestObject.NestedDynamicObject.StringProperty = "A";
             dynamicTestObject.NestedDynamicObject.AnotherStringProperty = "B";
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Copy("NestedDynamicObject/StringProperty", "NestedDynamicObject/AnotherStringProperty");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Copy("NestedDynamicObject/StringProperty", "NestedDynamicObject/AnotherStringProperty");
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
 
             // Assert
             Assert.Equal("A", dynamicTestObject.NestedDynamicObject.AnotherStringProperty);
@@ -97,11 +97,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             dynamic dynamicTestObject = new DynamicTestObject();
             dynamicTestObject.StringProperty = "A";
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Move("StringProperty", "AnotherStringProperty");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Move("StringProperty", "AnotherStringProperty");
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
             dynamicTestObject.TryGetValue("StringProperty", out object valueFromDictionary);
 
             // Assert
@@ -117,11 +117,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             dynamicTestObject.StringProperty = "A";
             dynamicTestObject.SimpleObject = new SimpleObject() { AnotherStringProperty = "B" };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Move("StringProperty", "SimpleObject/AnotherStringProperty");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Move("StringProperty", "SimpleObject/AnotherStringProperty");
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
             dynamicTestObject.TryGetValue("StringProperty", out object valueFromDictionary);
 
             // Assert
@@ -139,11 +139,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Move("Nested/IntegerList/0", "Nested/IntegerValue");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Move("Nested/IntegerList/0", "Nested/IntegerValue");
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
 
             // Assert
             Assert.Equal(new List<int>() { 2, 3 }, dynamicTestObject.Nested.IntegerList);
@@ -158,11 +158,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             dynamicTestObject.Test = new DynamicTestObject();
             dynamicTestObject.Test.AnotherTest = "A";
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Remove("Test");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Remove("Test");
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
             dynamicTestObject.TryGetValue("Test", out object valueFromDictionary);
 
             // Assert
@@ -179,13 +179,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 StringProperty = "A"
             };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Remove("Simpleobject/stringProperty");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Remove("Simpleobject/stringProperty");
 
             // Act
             var exception = Assert.Throws<JsonPatchException>(() =>
             {
-                patchDoc.ApplyTo(dynamicTestObject);
+                patchDocument.ApplyTo(dynamicTestObject);
             });
 
             // Assert
@@ -205,11 +205,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Remove("SimpleObject/IntegerList/2");
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Remove("SimpleObject/IntegerList/2");
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
 
             // Assert
             Assert.Equal(new List<int>() { 1, 2 }, dynamicTestObject.SimpleObject.IntegerList);
@@ -231,11 +231,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 DoubleValue = 1
             };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Replace("SimpleObject", newObject);
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace("SimpleObject", newObject);
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
 
             // Assert
             Assert.Equal(1, dynamicTestObject.SimpleObject.DoubleValue);
@@ -250,11 +250,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             dynamic dynamicTestObject = new DynamicTestObject();
             dynamicTestObject.IntegerList = new List<int>() { 1, 2, 3 };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Replace("IntegerList", new List<int>() { 4, 5, 6 });
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace("IntegerList", new List<int>() { 4, 5, 6 });
 
             // Act
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
 
             // Assert
             Assert.Equal(new List<int>() { 4, 5, 6 }, dynamicTestObject.IntegerList);
@@ -270,11 +270,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Test("Nested/IntegerList/1", 2);
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Test("Nested/IntegerList/1", 2);
 
             // Act & Assert
-            patchDoc.ApplyTo(dynamicTestObject);
+            patchDocument.ApplyTo(dynamicTestObject);
         }
 
         [Fact]
@@ -287,13 +287,13 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
                 IntegerList = new List<int>() { 1, 2, 3 }
             };
 
-            var patchDoc = new JsonPatchDocument();
-            patchDoc.Test("Nested/IntegerList/0", 2);
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Test("Nested/IntegerList/0", 2);
 
             // Act
             var exception = Assert.Throws<JsonPatchException>(() =>
             {
-                patchDoc.ApplyTo(dynamicTestObject);
+                patchDocument.ApplyTo(dynamicTestObject);
             });
 
             // Assert
