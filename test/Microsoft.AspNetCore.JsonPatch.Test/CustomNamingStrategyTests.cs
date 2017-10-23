@@ -6,7 +6,7 @@ using System.Dynamic;
 using Newtonsoft.Json.Serialization;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
+namespace Microsoft.AspNetCore.JsonPatch
 {
     public class CustomNamingStrategyTests
     {
