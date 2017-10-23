@@ -2,15 +2,29 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch
+namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests
 {
     public class DictionaryTest
     {
         [Fact]
-        public void Add_WhenDictionary_ValueIsNonObject_Succeeds()
+        public void TestIntegerValue_IsSuccessful()
+        {
+            // Arrange
+            var model = new IntDictionary();
+            model.DictionaryOfStringToInteger["one"] = 1;
+            model.DictionaryOfStringToInteger["two"] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Test("/DictionaryOfStringToInteger/two", 2);
+
+            // Act & Assert
+            patchDocument.ApplyTo(model);
+        }
+
+        [Fact]
+        public void AddIntegerValue_Succeeds()
         {
             // Arrange
             var model = new IntDictionary();
@@ -30,7 +44,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void Remove_WhenDictionary_ValueIsNonObject_Succeeds()
+        public void RemoveIntegerValue_Succeeds()
         {
             // Arrange
             var model = new IntDictionary();
@@ -48,7 +62,25 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void Replace_WhenDictionary_ValueIsNonObject_Succeeds()
+        public void MoveIntegerValue_Succeeds()
+        {
+            // Arrange
+            var model = new IntDictionary();
+            model.DictionaryOfStringToInteger["one"] = 1;
+            model.DictionaryOfStringToInteger["two"] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Move("/DictionaryOfStringToInteger/one", "/DictionaryOfStringToInteger/two");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(1, model.DictionaryOfStringToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfStringToInteger["two"]);
+        }
+
+        [Fact]
+        public void ReplaceIntegerValue_Succeeds()
         {
             // Arrange
             var model = new IntDictionary();
@@ -64,6 +96,25 @@ namespace Microsoft.AspNetCore.JsonPatch
             Assert.Equal(2, model.DictionaryOfStringToInteger.Count);
             Assert.Equal(1, model.DictionaryOfStringToInteger["one"]);
             Assert.Equal(20, model.DictionaryOfStringToInteger["two"]);
+        }
+
+        [Fact]
+        public void CopyIntegerValue_Succeeds()
+        {
+            // Arrange
+            var model = new IntDictionary();
+            model.DictionaryOfStringToInteger["one"] = 1;
+            model.DictionaryOfStringToInteger["two"] = 2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Copy("/DictionaryOfStringToInteger/one", "/DictionaryOfStringToInteger/two");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfStringToInteger.Count);
+            Assert.Equal(1, model.DictionaryOfStringToInteger["one"]);
+            Assert.Equal(1, model.DictionaryOfStringToInteger["two"]);
         }
 
         private class Customer
@@ -84,16 +135,145 @@ namespace Microsoft.AspNetCore.JsonPatch
 
         private class CustomerDictionary
         {
-            public IDictionary<string, Customer> DictionaryOfStringToCustomer { get; } = new Dictionary<string, Customer>();
+            public IDictionary<int, Customer> DictionaryOfStringToCustomer { get; } = new Dictionary<int, Customer>();
         }
 
         [Fact]
-        public void Replace_WhenDictionary_ValueAPocoType_Succeeds()
+        public void TestPocoObject_Succeeds()
         {
             // Arrange
-            var key1 = "key1";
+            var key1 = 100;
+            var value1 = new Customer() { Name = "James" };
+            var model = new CustomerDictionary();
+            model.DictionaryOfStringToCustomer[key1] = value1;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Test($"/DictionaryOfStringToCustomer/{key1}/Name", "James");
+
+            // Act & Assert
+            patchDocument.ApplyTo(model);
+        }
+
+        [Fact]
+        public void TestPocoObject_FailsWhenTestValueIsNotEqualToObjectValue()
+        {
+            // Arrange
+            var key1 = 100;
+            var value1 = new Customer() { Name = "James" };
+            var model = new CustomerDictionary();
+            model.DictionaryOfStringToCustomer[key1] = value1;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Test($"/DictionaryOfStringToCustomer/{key1}/Name", "Mike");
+
+            // Act
+            var exception = Assert.Throws<JsonPatchException>(() =>
+            {
+                patchDocument.ApplyTo(model);
+            });
+
+            // Assert
+            Assert.Equal("The current value 'James' at path 'Name' is not equal to the test value 'Mike'.", exception.Message);
+        }
+
+        [Fact]
+        public void AddReplacesPocoObject_Succeeds()
+        {
+            // Arrange
+            var key1 = 100;
             var value1 = new Customer() { Name = "Jamesss" };
-            var key2 = "key2";
+            var key2 = 200;
+            var value2 = new Customer() { Name = "Mike" };
+            var model = new CustomerDictionary();
+            model.DictionaryOfStringToCustomer[key1] = value1;
+            model.DictionaryOfStringToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Add($"/DictionaryOfStringToCustomer/{key1}/Name", "James");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfStringToCustomer.Count);
+            var actualValue1 = model.DictionaryOfStringToCustomer[key1];
+            Assert.NotNull(actualValue1);
+            Assert.Equal("James", actualValue1.Name);
+        }
+
+        [Fact]
+        public void RemovePocoObject_Succeeds()
+        {
+            // Arrange
+            var key1 = 100;
+            var value1 = new Customer() { Name = "Jamesss" };
+            var key2 = 200;
+            var value2 = new Customer() { Name = "Mike" };
+            var model = new CustomerDictionary();
+            model.DictionaryOfStringToCustomer[key1] = value1;
+            model.DictionaryOfStringToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Remove($"/DictionaryOfStringToCustomer/{key1}/Name");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            var actualValue1 = model.DictionaryOfStringToCustomer[key1];
+            Assert.Null(actualValue1.Name);
+        }
+
+        [Fact]
+        public void MovePocoObject_Succeeds()
+        {
+            // Arrange
+            var key1 = 100;
+            var value1 = new Customer() { Name = "James" };
+            var key2 = 200;
+            var value2 = new Customer() { Name = "Mike" };
+            var model = new CustomerDictionary();
+            model.DictionaryOfStringToCustomer[key1] = value1;
+            model.DictionaryOfStringToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Move($"/DictionaryOfStringToCustomer/{key1}/Name", $"/DictionaryOfStringToCustomer/{key2}/Name");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            var actualValue2 = model.DictionaryOfStringToCustomer[key2];
+            Assert.NotNull(actualValue2);
+            Assert.Equal("James", actualValue2.Name);
+        }
+
+        [Fact]
+        public void CopyPocoObject_Succeeds()
+        {
+            // Arrange
+            var key1 = 100;
+            var value1 = new Customer() { Name = "James" };
+            var key2 = 200;
+            var value2 = new Customer() { Name = "Mike" };
+            var model = new CustomerDictionary();
+            model.DictionaryOfStringToCustomer[key1] = value1;
+            model.DictionaryOfStringToCustomer[key2] = value2;
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Copy($"/DictionaryOfStringToCustomer/{key1}/Name", $"/DictionaryOfStringToCustomer/{key2}/Name");
+
+            // Act
+            patchDocument.ApplyTo(model);
+
+            // Assert
+            Assert.Equal(2, model.DictionaryOfStringToCustomer.Count);
+            var actualValue2 = model.DictionaryOfStringToCustomer[key2];
+            Assert.NotNull(actualValue2);
+            Assert.Equal("James", actualValue2.Name);
+        }
+
+        [Fact]
+        public void ReplacePocoObject_Succeeds()
+        {
+            // Arrange
+            var key1 = 100;
+            var value1 = new Customer() { Name = "Jamesss" };
+            var key2 = 200;
             var value2 = new Customer() { Name = "Mike" };
             var model = new CustomerDictionary();
             model.DictionaryOfStringToCustomer[key1] = value1;
@@ -112,114 +292,28 @@ namespace Microsoft.AspNetCore.JsonPatch
         }
 
         [Fact]
-        public void Replace_WhenDictionary_ValueAPocoType_Succeeds_WithSerialization()
-        {
-            // Arrange
-            var key1 = "key1";
-            var value1 = new Customer() { Name = "Jamesss" };
-            var key2 = "key2";
-            var value2 = new Customer() { Name = "Mike" };
-            var model = new CustomerDictionary();
-            model.DictionaryOfStringToCustomer[key1] = value1;
-            model.DictionaryOfStringToCustomer[key2] = value2;
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Replace($"/DictionaryOfStringToCustomer/{key1}/Name", "James");
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<CustomerDictionary>>(serialized);
-
-            // Act
-            patchDocument.ApplyTo(model);
-
-            // Assert
-            Assert.Equal(2, model.DictionaryOfStringToCustomer.Count);
-            var actualValue1 = model.DictionaryOfStringToCustomer[key1];
-            Assert.NotNull(actualValue1);
-            Assert.Equal("James", actualValue1.Name);
-        }
-
-        [Fact]
-        public void Replace_WhenDictionary_ValueAPocoType_WithEscaping_Succeeds()
+        public void ReplacePocoObject_WithEscaping_Succeeds()
         {
             // Arrange
             var key1 = "Foo/Name";
-            var value1 = new Customer() { Name = "Jamesss" };
+            var value1 = 100;
             var key2 = "Foo";
-            var value2 = new Customer() { Name = "Mike" };
-            var model = new CustomerDictionary();
-            model.DictionaryOfStringToCustomer[key1] = value1;
-            model.DictionaryOfStringToCustomer[key2] = value2;
+            var value2 = 200;
+            var model = new IntDictionary();
+            model.DictionaryOfStringToInteger[key1] = value1;
+            model.DictionaryOfStringToInteger[key2] = value2;
             var patchDocument = new JsonPatchDocument();
-            patchDocument.Replace($"/DictionaryOfStringToCustomer/Foo~1Name/Name", "James");
+            patchDocument.Replace($"/DictionaryOfStringToInteger/Foo~1Name", 300);
 
             // Act
             patchDocument.ApplyTo(model);
 
             // Assert
-            Assert.Equal(2, model.DictionaryOfStringToCustomer.Count);
-            var actualValue1 = model.DictionaryOfStringToCustomer[key1];
-            var actualValue2 = model.DictionaryOfStringToCustomer[key2];
-            Assert.NotNull(actualValue1);
-            Assert.Equal("James", actualValue1.Name);
-            Assert.Equal("Mike", actualValue2.Name);
-
-        }
-
-        [Fact]
-        public void Replace_DeepNested_DictionaryValue_Succeeds()
-        {
-            // Arrange
-            var key1 = "key1";
-            var value1 = new Customer() { Name = "Jamesss" };
-            var key2 = "key2";
-            var value2 = new Customer() { Name = "Mike" };
-            var model = new CustomerDictionary();
-            model.DictionaryOfStringToCustomer[key1] = value1;
-            model.DictionaryOfStringToCustomer[key2] = value2;
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Replace($"/DictionaryOfStringToCustomer/{key1}/Name", "James");
-
-            // Act
-            patchDocument.ApplyTo(model);
-
-            // Assert
-            Assert.Equal(2, model.DictionaryOfStringToCustomer.Count);
-            var actualValue1 = model.DictionaryOfStringToCustomer[key1];
-            Assert.NotNull(actualValue1);
-            Assert.Equal("James", actualValue1.Name);
-        }
-
-        [Fact]
-        public void Replace_DeepNested_DictionaryValue_Succeeds_WithSerialization()
-        {
-            // Arrange
-            var key1 = "key1";
-            var value1 = new Customer() { Name = "James", Address = new Address { City = "Redmond" } };
-            var key2 = "key2";
-            var value2 = new Customer() { Name = "Mike", Address = new Address { City = "Seattle" } };
-            var model = new CustomerDictionary();
-            model.DictionaryOfStringToCustomer[key1] = value1;
-            model.DictionaryOfStringToCustomer[key2] = value2;
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Replace($"/DictionaryOfStringToCustomer/{key1}/Address/City", "Bellevue");
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<CustomerDictionary>>(serialized);
-
-            // Act
-            patchDocument.ApplyTo(model);
-
-            // Assert
-            Assert.Equal(2, model.DictionaryOfStringToCustomer.Count);
-            var actualValue1 = model.DictionaryOfStringToCustomer[key1];
-            Assert.NotNull(actualValue1);
-            Assert.Equal("James", actualValue1.Name);
-            var address = actualValue1.Address;
-            Assert.NotNull(address);
-            Assert.Equal("Bellevue", address.City);
-        }
-
-        class Class9
-        {
-            public List<string> StringList { get; set; } = new List<string>();
+            Assert.Equal(2, model.DictionaryOfStringToInteger.Count);
+            var actualValue1 = model.DictionaryOfStringToInteger[key1];
+            var actualValue2 = model.DictionaryOfStringToInteger[key2];
+            Assert.Equal(300, actualValue1);
+            Assert.Equal(200, actualValue2);
         }
     }
 }

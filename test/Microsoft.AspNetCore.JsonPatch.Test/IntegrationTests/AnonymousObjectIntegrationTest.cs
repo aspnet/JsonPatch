@@ -2,225 +2,108 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
 using Microsoft.AspNetCore.JsonPatch.Exceptions;
-using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.AspNetCore.JsonPatch.Test.IntegrationTests
+namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests
 {
     public class AnonymousObjectIntegrationTest
     {
         [Fact]
-        public void ShouldAddToList_WithDifferentCase()
+        public void AddNewProperty_ShouldFail()
         {
-            var targetObject = new
-            {
-                IntegerList = new List<int>() { 1, 2, 3 }
-            };
+            // Arrange
+            var targetObject = new { };
 
-            // create patch
             var patchDocument = new JsonPatchDocument();
-            patchDocument.Add("integerlist/0", 4);
+            patchDocument.Add("NewProperty", 4);
 
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
-            deserialized.ApplyTo(targetObject);
-
-            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, targetObject.IntegerList);
-        }
-
-        [Fact]
-        public void AddToList_InvalidPositionTooLarge()
-        {
-            var targetObject = new
-            {
-                IntegerList = new List<int>() { 1, 2, 3 }
-            };
-
-            // create patch
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Add("IntegerList/4", 4);
-
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
+            // Act
             var exception = Assert.Throws<JsonPatchException>(() =>
             {
-                deserialized.ApplyTo(targetObject);
+                patchDocument.ApplyTo(targetObject);
             });
-            Assert.Equal(
-                string.Format("The index value provided by path segment '{0}' is out of bounds of the array size.", "4"),
+
+            // Assert
+            Assert.Equal("The target location specified by path segment 'NewProperty' was not found.",
                 exception.Message);
-        }
-
-        [Fact]
-        public void AddToList_AtBeginning()
-        {
-            var targetObject = new
-            {
-                IntegerList = new List<int>() { 1, 2, 3 }
-            };
-
-            // create patch
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Add("IntegerList/0", 4);
-
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
-            deserialized.ApplyTo(targetObject);
-
-            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, targetObject.IntegerList);
-        }
-
-        [Fact]
-        public void AddToList_InvalidPositionTooSmall()
-        {
-            var targetObject = new
-            {
-                IntegerList = new List<int>() { 1, 2, 3 }
-            };
-
-            // create patch
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Add("IntegerList/-1", 4);
-
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
-            var exception = Assert.Throws<JsonPatchException>(() =>
-            {
-                deserialized.ApplyTo(targetObject);
-            });
-            Assert.Equal(
-                string.Format("The index value provided by path segment '{0}' is out of bounds of the array size.", "-1"),
-                exception.Message);
-        }
-
-        [Fact]
-        public void AddToList_Append()
-        {
-            var targetObject = new
-            {
-                IntegerList = new List<int>() { 1, 2, 3 }
-            };
-
-            // create patch
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Add("IntegerList/-", 4);
-
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
-            deserialized.ApplyTo(targetObject);
-
-            Assert.Equal(new List<int>() { 1, 2, 3, 4 }, targetObject.IntegerList);
         }
 
         [Fact]
         public void AddNewProperty_ToNestedAnonymousObject_ShouldFail()
         {
+            // Arrange
             dynamic targetObject = new
             {
                 Test = 1,
                 nested = new { }
             };
 
-            // create patch
             var patchDocument = new JsonPatchDocument();
             patchDocument.Add("Nested/NewInt", 1);
 
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
+            // Act
             var exception = Assert.Throws<JsonPatchException>(() =>
             {
-                deserialized.ApplyTo(targetObject);
+                patchDocument.ApplyTo(targetObject);
             });
-            Assert.Equal(
-                string.Format("The target location specified by path segment '{0}' was not found.", "NewInt"),
+
+            // Assert
+            Assert.Equal("The target location specified by path segment 'NewInt' was not found.",
                 exception.Message);
         }
 
         [Fact]
-        public void AddNewProperty_ToTypedObject_ShouldFail()
+        public void AddDoesNotReplace()
         {
-            dynamic targetObject = new
-            {
-                Test = 1,
-                nested = new NestedObject()
-            };
-
-            // create patch
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Add("Nested/NewInt", 1);
-
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
-            var exception = Assert.Throws<JsonPatchException>(() =>
-            {
-                deserialized.ApplyTo(targetObject);
-            });
-            Assert.Equal(
-                string.Format("The target location specified by path segment '{0}' was not found.", "NewInt"),
-                exception.Message);
-        }
-
-        [Fact]
-        public void Add_DoesNotReplace()
-        {
+            // Arrange
             var targetObject = new
             {
                 StringProperty = "A"
             };
 
-            // create patch
             var patchDocument = new JsonPatchDocument();
             patchDocument.Add("StringProperty", "B");
 
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
+            // Act
             var exception = Assert.Throws<JsonPatchException>(() =>
             {
-                deserialized.ApplyTo(targetObject);
+                patchDocument.ApplyTo(targetObject);
             });
-            Assert.Equal(
-                string.Format("The property at path '{0}' could not be updated.", "StringProperty"),
+
+            // Assert
+            Assert.Equal("The property at path 'StringProperty' could not be updated.",
                 exception.Message);
         }
 
         [Fact]
-        public void RemoveProperty_ShouldFail_IfRootIsAnonymous()
+        public void RemoveProperty_ShouldFail()
         {
+            // Arrange
             dynamic targetObject = new
             {
                 Test = 1
             };
 
-            // create patch
             var patchDocument = new JsonPatchDocument();
             patchDocument.Remove("Test");
 
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
+            // Act
             var exception = Assert.Throws<JsonPatchException>(() =>
             {
-                deserialized.ApplyTo(targetObject);
+                patchDocument.ApplyTo(targetObject);
             });
-            Assert.Equal(
-                string.Format("The property at path '{0}' could not be updated.", "Test"),
+
+            // Assert
+            Assert.Equal("The property at path 'Test' could not be updated.",
                 exception.Message);
         }
 
         [Fact]
-        public void ReplaceGuid_ExpandoObject_InAnonymous()
+        public void ReplaceGuid_InNestedExpandoObject()
         {
+            // Arrange
             dynamic nestedObject = new ExpandoObject();
             nestedObject.GuidValue = Guid.NewGuid();
 
@@ -230,13 +113,103 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.IntegrationTests
             };
 
             var newGuid = Guid.NewGuid();
-            // create patch
             var patchDocument = new JsonPatchDocument();
             patchDocument.Replace("nestedobject/GuidValue", newGuid);
 
+            // Act
             patchDocument.ApplyTo(targetObject);
 
+            // Assert
             Assert.Equal(newGuid, targetObject.NestedObject.GuidValue);
+        }
+
+        [Fact]
+        public void ReplaceProperty_ShouldFail()
+        {
+            // Arrange
+            var targetObject = new
+            {
+                StringProperty = "A",
+                AnotherStringProperty = "B"
+            };
+
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Replace("StringProperty", "AnotherStringProperty");
+
+            // Act
+            var exception = Assert.Throws<JsonPatchException>(() =>
+            {
+                patchDocument.ApplyTo(targetObject);
+            });
+
+            // Assert
+            Assert.Equal("The property at path 'StringProperty' could not be updated.",
+                exception.Message);
+        }
+
+        [Fact]
+        public void MoveProperty_ShouldFail()
+        {
+            // Arrange
+            var targetObject = new
+            {
+                StringProperty = "A",
+                AnotherStringProperty = "B"
+            };
+
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Move("StringProperty", "AnotherStringProperty");
+
+            // Act
+            var exception = Assert.Throws<JsonPatchException>(() =>
+            {
+                patchDocument.ApplyTo(targetObject);
+            });
+
+            // Assert
+            Assert.Equal("The property at path 'StringProperty' could not be updated.",
+                exception.Message);
+        }
+
+        [Fact]
+        public void TestStringProperty_IsSucessful()
+        {
+            // Arrange
+            var targetObject = new
+            {
+                StringProperty = "A",
+                AnotherStringProperty = "B"
+            };
+
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Test("StringProperty", "A");
+
+            // Act & Assert
+            patchDocument.ApplyTo(targetObject);
+        }
+
+        [Fact]
+        public void TestStringProperty_Fails()
+        {
+            // Arrange
+            var targetObject = new
+            {
+                StringProperty = "A",
+                AnotherStringProperty = "B"
+            };
+
+            var patchDocument = new JsonPatchDocument();
+            patchDocument.Test("StringProperty", "B");
+
+            // Act
+            var exception = Assert.Throws<JsonPatchException>(() =>
+            {
+                patchDocument.ApplyTo(targetObject);
+            });
+
+            // Assert
+            Assert.Equal("The current value 'A' at path 'StringProperty' is not equal to the test value 'B'.",
+                exception.Message);
         }
     }
 }

@@ -19,7 +19,10 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
         [InlineData("~0~1foo", new string[] { "~/foo" })]
         public void ParsingValidPathShouldSucceed(string path, string[] expected)
         {
+            // Arrange & Act
             var parsedPath = new ParsedPath(path);
+
+            // Assert
             Assert.Equal(expected, parsedPath.Segments);
         }
 
@@ -30,6 +33,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Test
         [InlineData("foo~3bar")]
         public void PathWithInvalidEscapeSequenceShouldFail(string path)
         {
+            // Arrange, Act & Assert
             Assert.Throws<JsonPatchException>(() =>
             {
                 var parsedPath = new ParsedPath(path);

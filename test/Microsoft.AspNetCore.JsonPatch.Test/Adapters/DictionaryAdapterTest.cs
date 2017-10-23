@@ -74,9 +74,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // Assert
             Assert.False(getStatus);
-            Assert.Equal(
-                string.Format("The provided path segment '{0}' cannot be converted to the target type.", guidKey.ToString()),
-                message);
+            Assert.Equal($"The provided path segment '{guidKey.ToString()}' cannot be converted to the target type.", message);
             Assert.Null(outValue);
         }
 
@@ -103,9 +101,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // Assert
             Assert.False(getStatus);
-            Assert.Equal(
-                string.Format("The target location specified by path segment '{0}' was not found.", nameKey.ToUpper()),
-                message);
+            Assert.Equal("The target location specified by path segment 'NAME' was not found.", message);
             Assert.Null(outValue);
         }
 
@@ -191,9 +187,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // Assert
             Assert.False(replaceStatus);
-            Assert.Equal(
-                string.Format("The value '{0}' is invalid for target location.", "test"),
-                message);
+            Assert.Equal("The value 'test' is invalid for target location.", message);
             Assert.Equal(5, dictionary[guidKey]);
         }
 
@@ -211,9 +205,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // Assert
             Assert.False(replaceStatus);
-            Assert.Equal(
-                string.Format("The target location specified by path segment '{0}' was not found.", nameKey),
-                message);
+            Assert.Equal("The target location specified by path segment 'Name' was not found.", message);
             Assert.Empty(dictionary);
         }
 
@@ -231,9 +223,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             // Assert
             Assert.False(removeStatus);
-            Assert.Equal(
-                string.Format("The target location specified by path segment '{0}' was not found.", nameKey),
-                message);
+            Assert.Equal("The target location specified by path segment 'Name' was not found.", message);
             Assert.Empty(dictionary);
         }
 

@@ -19,20 +19,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic obj = new DynamicTestObject();
-            obj.Test = 1;
+            dynamic targetObject = new DynamicTestObject();
+            targetObject.Test = 1;
 
-            // create patch
             var patchDocument = new JsonPatchDocument();
             patchDocument.Add("NewInt", 1);
             patchDocument.ContractResolver = contractResolver;
 
             // Act
-            patchDocument.ApplyTo(obj);
+            patchDocument.ApplyTo(targetObject);
 
             // Assert
-            Assert.Equal(1, obj.customNewInt);
-            Assert.Equal(1, obj.Test);
+            Assert.Equal(1, targetObject.customNewInt);
+            Assert.Equal(1, targetObject.Test);
         }
 
         [Fact]
@@ -44,19 +43,19 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic obj = new DynamicTestObject();
-            obj.customStringProperty = "A";
-            obj.customAnotherStringProperty = "B";
+            dynamic targetObject = new DynamicTestObject();
+            targetObject.customStringProperty = "A";
+            targetObject.customAnotherStringProperty = "B";
 
             var patchDocument = new JsonPatchDocument();
             patchDocument.Copy("StringProperty", "AnotherStringProperty");
             patchDocument.ContractResolver = contractResolver;
 
             // Act
-            patchDocument.ApplyTo(obj);
+            patchDocument.ApplyTo(targetObject);
 
             // Assert
-            Assert.Equal("A", obj.customAnotherStringProperty);
+            Assert.Equal("A", targetObject.customAnotherStringProperty);
         }
 
         [Fact]
@@ -68,22 +67,21 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic obj = new ExpandoObject();
-            obj.customStringProperty = "A";
-            obj.customAnotherStringProperty = "B";
+            dynamic targetObject = new ExpandoObject();
+            targetObject.customStringProperty = "A";
+            targetObject.customAnotherStringProperty = "B";
 
-            // create patch
             var patchDocument = new JsonPatchDocument();
             patchDocument.Move("StringProperty", "AnotherStringProperty");
             patchDocument.ContractResolver = contractResolver;
 
             // Act
-            patchDocument.ApplyTo(obj);
-            var cont = obj as IDictionary<string, object>;
+            patchDocument.ApplyTo(targetObject);
+            var cont = targetObject as IDictionary<string, object>;
             cont.TryGetValue("customStringProperty", out var valueFromDictionary);
 
             // Assert
-            Assert.Equal("A", obj.customAnotherStringProperty);
+            Assert.Equal("A", targetObject.customAnotherStringProperty);
             Assert.Null(valueFromDictionary);
         }
 
@@ -96,19 +94,18 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            var obj = new Dictionary<string, int>()
+            var targetObject = new Dictionary<string, int>()
             {
                 { "customTest", 1},
             };
 
-            // create patch
             var patchDocument = new JsonPatchDocument();
             patchDocument.Remove("Test");
             patchDocument.ContractResolver = contractResolver;
 
             // Act
-            patchDocument.ApplyTo(obj);
-            var cont = obj as IDictionary<string, int>;
+            patchDocument.ApplyTo(targetObject);
+            var cont = targetObject as IDictionary<string, int>;
             cont.TryGetValue("customTest", out var valueFromDictionary);
 
             // Assert
@@ -124,18 +121,18 @@ namespace Microsoft.AspNetCore.JsonPatch.Test.Dynamic
                 NamingStrategy = new TestNamingStrategy()
             };
 
-            dynamic obj = new ExpandoObject();
-            obj.customTest = 1;
+            dynamic targetObject = new ExpandoObject();
+            targetObject.customTest = 1;
 
             var patchDocument = new JsonPatchDocument();
             patchDocument.Replace("Test", 2);
             patchDocument.ContractResolver = contractResolver;
 
             // Act
-            patchDocument.ApplyTo(obj);
+            patchDocument.ApplyTo(targetObject);
 
             // Assert
-            Assert.Equal(2, obj.customTest);
+            Assert.Equal(2, targetObject.customTest);
         }
 
         private class TestNamingStrategy : NamingStrategy
