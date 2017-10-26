@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Dynamic;
 using Newtonsoft.Json;
 using Xunit;
@@ -30,44 +31,6 @@ namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests
             // Assert
             Assert.Equal("B", targetObject.SimpleObjectWithNullCheck.StringProperty);
         }
-
-        [Fact]
-        public void ReplaceSimpleObjectProperies_WithSerialization()
-        {
-            // Arrange
-            var targetObject = new SimpleObjectWithNestedObject()
-            {
-                SimpleObject = new SimpleObject()
-                {
-                    StringProperty = "A",
-                    DecimalValue = 10,
-                    DoubleValue = 10,
-                    FloatValue = 10,
-                    IntegerValue = 10
-                }
-            };
-
-            var patchDocument = new JsonPatchDocument<SimpleObjectWithNestedObject>();
-            patchDocument.Replace(o => o.SimpleObject.StringProperty, "B");
-            patchDocument.Replace(o => o.SimpleObject.DecimalValue, 12);
-            patchDocument.Replace(o => o.SimpleObject.DoubleValue, 12);
-            patchDocument.Replace(o => o.SimpleObject.FloatValue, 12);
-            patchDocument.Replace(o => o.SimpleObject.IntegerValue, 12);
-
-            // serialize & deserialize
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserizalized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObjectWithNestedObject>>(serialized);
-
-            // Act
-            deserizalized.ApplyTo(targetObject);
-
-            // Assert
-            Assert.Equal("B", targetObject.SimpleObject.StringProperty);
-            Assert.Equal(12, targetObject.SimpleObject.DecimalValue);
-            Assert.Equal(12, targetObject.SimpleObject.DoubleValue);
-            Assert.Equal(12, targetObject.SimpleObject.FloatValue);
-            Assert.Equal(12, targetObject.SimpleObject.IntegerValue);
-        }      
 
         [Fact]
         public void ReplaceNestedObject_WithSerialization()
@@ -164,10 +127,7 @@ namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests
             var patchDocument = new JsonPatchDocument();
             patchDocument.Add("DynamicProperty/NewInt", 1);
 
-            var serialized = JsonConvert.SerializeObject(patchDocument);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
-
-            deserialized.ApplyTo(targetObject);
+            patchDocument.ApplyTo(targetObject);
 
             Assert.Equal(1, targetObject.DynamicProperty.NewInt);
         }
@@ -344,6 +304,39 @@ namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests
             Assert.Equal("D", targetObject.SimpleObject.AnotherStringProperty);
             Assert.Same(iDto, targetObject.SimpleObject);
             Assert.Null(targetObject.InheritedObject);
+        }
+
+        private class SimpleObjectWithNullCheck
+        {
+            private string stringProperty;
+
+            public string StringProperty
+            {
+                get
+                {
+                    return stringProperty;
+                }
+
+                set
+                {
+                    if (value == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+
+                    stringProperty = value;
+                }
+            }
+        }
+
+        private class SimpleObjectWithNestedObjectWithNullCheck
+        {
+            public SimpleObjectWithNullCheck SimpleObjectWithNullCheck { get; set; }
+
+            public SimpleObjectWithNestedObjectWithNullCheck()
+            {
+                SimpleObjectWithNullCheck = new SimpleObjectWithNullCheck();
+            }
         }
     }
 }

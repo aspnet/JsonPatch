@@ -1,8 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Dynamic;
 using Microsoft.AspNetCore.JsonPatch.Exceptions;
 using Xunit;
 
@@ -98,29 +96,6 @@ namespace Microsoft.AspNetCore.JsonPatch.IntegrationTests
             // Assert
             Assert.Equal("The property at path 'Test' could not be updated.",
                 exception.Message);
-        }
-
-        [Fact]
-        public void ReplaceGuid_InNestedExpandoObject()
-        {
-            // Arrange
-            dynamic nestedObject = new ExpandoObject();
-            nestedObject.GuidValue = Guid.NewGuid();
-
-            dynamic targetObject = new
-            {
-                NestedObject = nestedObject
-            };
-
-            var newGuid = Guid.NewGuid();
-            var patchDocument = new JsonPatchDocument();
-            patchDocument.Replace("nestedobject/GuidValue", newGuid);
-
-            // Act
-            patchDocument.ApplyTo(targetObject);
-
-            // Assert
-            Assert.Equal(newGuid, targetObject.NestedObject.GuidValue);
         }
 
         [Fact]
