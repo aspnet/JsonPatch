@@ -14,12 +14,25 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private readonly string[] _segments;
 
+        private static List<char> _separators = new List<char> { '/' };
+
         public ParsedPath(string path)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
             }
+
+            _segments = ParsePath(path);
+        }
+
+        public ParsedPath(string path, List<char> separators)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            _separators = separators;
 
             _segments = ParsePath(path);
         }
@@ -46,7 +59,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             for (var i = 0; i < path.Length; i++)
             {
-                if (path[i] == '/')
+                if (_separators.Contains(path[i]))
                 {
                     if (sb.Length > 0)
                     {
