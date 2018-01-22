@@ -188,6 +188,11 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             if (TryGetJsonProperty(target, contractResolver, segment, out var jsonProperty))
             {
                 value = jsonProperty.ValueProvider.GetValue(target);
+                if (value==null)
+                {
+                    value = Activator.CreateInstance(jsonProperty.PropertyType);
+                    jsonProperty.ValueProvider.SetValue(target, value);
+                }
                 errorMessage = null;
                 return true;
             }
