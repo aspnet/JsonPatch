@@ -690,7 +690,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         /// Apply this JsonPatchDocument
         /// </summary>
         /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
-        public void ApplyTo(TModel objectToApplyTo)
+        public virtual void ApplyTo(TModel objectToApplyTo)
         {
             if (objectToApplyTo == null)
             {
@@ -705,7 +705,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         /// </summary>
         /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
         /// <param name="logErrorAction">Action to log errors</param>
-        public void ApplyTo(TModel objectToApplyTo, Action<JsonPatchError> logErrorAction)
+        public virtual void ApplyTo(TModel objectToApplyTo, Action<JsonPatchError> logErrorAction)
         {
             if (objectToApplyTo == null)
             {

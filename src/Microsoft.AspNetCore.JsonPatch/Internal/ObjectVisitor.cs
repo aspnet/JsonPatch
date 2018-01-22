@@ -7,18 +7,18 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public class ObjectVisitor
+    public class ObjectVisitor : IObjectVisitor
     {
-        private readonly IContractResolver _contractResolver;
-        private readonly ParsedPath _path;
+        protected readonly IContractResolver _contractResolver;
+        protected readonly IParsedPath _path;
 
-        public ObjectVisitor(ParsedPath path, IContractResolver contractResolver)
+        public ObjectVisitor(IParsedPath path, IContractResolver contractResolver)
         {
             _path = path;
             _contractResolver = contractResolver ?? throw new ArgumentNullException(nameof(contractResolver));
         }
 
-        public bool TryVisit(ref object target, out IAdapter adapter, out string errorMessage)
+        public virtual bool TryVisit(ref object target, out IAdapter adapter, out string errorMessage)
         {
             if (target == null)
             {
@@ -46,7 +46,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
             return true;
         }
 
-        private IAdapter SelectAdapter(object targetObject)
+        protected virtual IAdapter SelectAdapter(object targetObject)
         {
             var jsonContract = _contractResolver.ResolveContract(targetObject.GetType());
 
