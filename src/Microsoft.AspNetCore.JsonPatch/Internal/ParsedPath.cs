@@ -8,17 +8,27 @@ using System.Text;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
-    public struct ParsedPath
+    public class ParsedPath : IParsedPath
     {
         private static readonly string[] Empty = null;
 
         private readonly string[] _segments;
 
-        public ParsedPath(string path)
+        public static List<char> Separators = new List<char> { '/' };
+
+        public ParsedPath(string path):this(path, null)
+        {
+        }
+
+        public ParsedPath(string path, List<char> separators)
         {
             if (path == null)
             {
                 throw new ArgumentNullException(nameof(path));
+            }
+            if (separators!=null)
+            {
+                Separators = separators;
             }
 
             _segments = ParsePath(path);
@@ -46,7 +56,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
             for (var i = 0; i < path.Length; i++)
             {
-                if (path[i] == '/')
+                if (Separators.Contains(path[i]))
                 {
                     if (sb.Length > 0)
                     {
