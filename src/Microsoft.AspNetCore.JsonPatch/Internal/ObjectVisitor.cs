@@ -3,19 +3,37 @@
 
 using System;
 using System.Collections;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.AspNetCore.JsonPatch.Internal
 {
     public class ObjectVisitor
     {
+        private readonly IAdapterFactory _adapterFactory;
         private readonly IContractResolver _contractResolver;
         private readonly ParsedPath _path;
 
-        public ObjectVisitor(ParsedPath path, IContractResolver contractResolver)
+        /// <summary>
+        /// Initializes a new instance of <see cref="ObjectVisitor"/> using the default <see cref="AdapterFactory"/>.
+        /// </summary>
+        /// <param name="path">The path of the JsonPatch operation</param>
+        /// <param name="contractResolver">The <see cref="IContractResolver"/>.</param>
+        public ObjectVisitor(ParsedPath path, IContractResolver contractResolver) : this(path, contractResolver, new AdapterFactory())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ObjectVisitor"/>.
+        /// </summary>
+        /// <param name="path">The path of the JsonPatch operation</param>
+        /// <param name="contractResolver">The <see cref="IContractResolver"/>.</param>
+        /// <param name="adapterFactory">The <see cref="IAdapterFactory"/> to use when creating adaptors.</param>
+        public ObjectVisitor(ParsedPath path, IContractResolver contractResolver, IAdapterFactory adapterFactory)
         {
             _path = path;
             _contractResolver = contractResolver ?? throw new ArgumentNullException(nameof(contractResolver));
+            _adapterFactory = adapterFactory;
         }
 
         public bool TryVisit(ref object target, out IAdapter adapter, out string errorMessage)
@@ -48,25 +66,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private IAdapter SelectAdapter(object targetObject)
         {
-            var jsonContract = _contractResolver.ResolveContract(targetObject.GetType());
-
-            if (targetObject is IList)
-            {
-                return new ListAdapter();
-            }
-            else if (jsonContract is JsonDictionaryContract jsonDictionaryContract)
-            {
-                var type = typeof(DictionaryAdapter<,>).MakeGenericType(jsonDictionaryContract.DictionaryKeyType, jsonDictionaryContract.DictionaryValueType);
-                return (IAdapter)Activator.CreateInstance(type);
-            }
-            else if (jsonContract is JsonDynamicContract)
-            {
-                return new DynamicObjectAdapter();
-            }
-            else
-            {
-                return new PocoAdapter();
-            }
+            return _adapterFactory.Create(targetObject, _contractResolver);
         }
     }
 }
