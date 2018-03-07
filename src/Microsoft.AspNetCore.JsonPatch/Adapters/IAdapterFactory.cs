@@ -15,8 +15,8 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
         /// Creates an <see cref="IAdapter"/> for the current object 
         /// </summary>
         /// <param name="target">The target object</param>
-        /// <param name="contractResolver">The current contract resolver</param>
+        /// <param name="targetContract">The JsonContract for the target object</param>
         /// <returns>The needed <see cref="IAdapter"/></returns>
-        IAdapter Create(object target, IContractResolver contractResolver);
+        IAdapter Create(object target, JsonContract targetContract);
     }
 }
