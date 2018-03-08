@@ -13,18 +13,20 @@ namespace Microsoft.AspNetCore.JsonPatch.Adapters
     public class AdapterFactory : IAdapterFactory
     {
         /// <inheritdoc />
-        public virtual IAdapter Create(object target, JsonContract targetContract)
+        public virtual IAdapter Create(object target, IContractResolver contractResolver)
         {
+            var jsonContract = contractResolver.ResolveContract(target.GetType());
+
             if (target is IList)
             {
                 return new ListAdapter();
             }
-            else if (targetContract is JsonDictionaryContract jsonDictionaryContract)
+            else if (jsonContract is JsonDictionaryContract jsonDictionaryContract)
             {
                 var type = typeof(DictionaryAdapter<,>).MakeGenericType(jsonDictionaryContract.DictionaryKeyType, jsonDictionaryContract.DictionaryValueType);
                 return (IAdapter)Activator.CreateInstance(type);
             }
-            else if (targetContract is JsonDynamicContract)
+            else if (jsonContract is JsonDynamicContract)
             {
                 return new DynamicObjectAdapter();
             }

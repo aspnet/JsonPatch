@@ -66,8 +66,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Internal
 
         private IAdapter SelectAdapter(object targetObject)
         {
-            var jsonContract = _contractResolver.ResolveContract(targetObject.GetType());
-            return _adapterFactory.Create(targetObject, jsonContract);
+            return _adapterFactory.Create(targetObject, _contractResolver);
         }
     }
 }
