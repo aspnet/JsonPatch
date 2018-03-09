@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Ancile.Microsoft.AspNetCore.JsonPatch.dll</id>
+    <version>1.1.0$prereleaseversion$</version>
+    <authors>ANCILE Solutions</authors>
+    <owners>ANCILE Solutions</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Ancile fork of Microsoft.AspNetCore.JsonPatch to support Scim JsonPatch capabilities.</description>
+    <releaseNotes>Added override support.</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+  </metadata>
+  <files>
+        <file src="bin\$configuration$\Microsoft.AspNetCore.JsonPatch.dll" target="lib" />
+    </files>
+</package>
