@@ -46,7 +46,7 @@ namespace Microsoft.AspNetCore.JsonPatch
         {
             Operations = operations ?? throw new ArgumentNullException(nameof(operations));
             ContractResolver = contractResolver ?? throw new ArgumentNullException(nameof(contractResolver));
-            AdapterFactory = adapterFactory ?? throw new ArgumentNullException(nameof(adapterFactory)); ;
+            AdapterFactory = adapterFactory ?? throw new ArgumentNullException(nameof(adapterFactory));
         }
 
         /// <summary>
