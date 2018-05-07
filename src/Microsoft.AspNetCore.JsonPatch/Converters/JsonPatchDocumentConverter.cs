@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Converters
                 serializer.Populate(jObjectReader, targetOperations);
 
                 // container target: the JsonPatchDocument. 
-                var container = new JsonPatchDocument(targetOperations, new DefaultContractResolver());
+                var container = CreateContainer(targetOperations);
 
                 return container;
             }
@@ -72,5 +72,14 @@ namespace Microsoft.AspNetCore.JsonPatch.Converters
                 serializer.Serialize(writer, lst);
             }
         }
+
+        /// <summary>
+        /// Create the JsonPatchDocument using the appropriate constructor
+        /// </summary>
+        /// <param name="operations">The operations to assign to the JsonPatchDocument</param>
+        /// <returns>A new instance of the JsonPatchDocument</returns>
+        protected virtual JsonPatchDocument CreateContainer(List<Operation> operations ) =>
+	        new JsonPatchDocument(operations, new DefaultContractResolver());
+
     }
 }

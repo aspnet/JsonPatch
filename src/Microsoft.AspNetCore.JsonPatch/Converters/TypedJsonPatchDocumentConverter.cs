@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.JsonPatch.Converters
                 serializer.Populate(jObjectReader, targetOperations);
 
                 // container target: the typed JsonPatchDocument.
-                var container = Activator.CreateInstance(objectType, targetOperations, new DefaultContractResolver());
+                var container = CreateTypedContainer(objectType, targetOperations);
 
                 return container;
             }
@@ -59,6 +59,17 @@ namespace Microsoft.AspNetCore.JsonPatch.Converters
             {
                 throw new JsonSerializationException(Resources.InvalidJsonPatchDocument, ex);
             }
+        }
+
+        /// <summary>
+        /// Create the JsonPatchDocument using the appropriate constructor
+        /// </summary>
+        /// <param name="objectType">The model type for the JsonPatchDocument</param>
+        /// <param name="operations">The operations to assign to the JsonPatchDocument</param>
+        /// <returns>A new instance of the JsonPatchDocument</returns>
+        protected virtual object CreateTypedContainer(Type objectType, object operations)
+        {
+            return Activator.CreateInstance(objectType, operations, new DefaultContractResolver());
         }
     }
 }

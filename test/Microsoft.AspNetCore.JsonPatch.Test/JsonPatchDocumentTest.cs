@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using Microsoft.AspNetCore.JsonPatch.Exceptions;
+using Microsoft.AspNetCore.JsonPatch.Test;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -157,6 +158,31 @@ namespace Microsoft.AspNetCore.JsonPatch
 
             // Assert
             Assert.Equal("The JSON patch document was malformed and could not be parsed.", exception.Message);
+        }
+
+        [Fact]
+        public void Deserialization_Supports_Custom_AdapterFactory()
+        {
+            // Arrange
+            var doc = new SimpleObject()
+            {
+                StringProperty = "A",
+                DecimalValue = 10,
+                DoubleValue = 10,
+                FloatValue = 10,
+                IntegerValue = 10
+            };
+
+            var patchDocument = new JsonPatchDocument<SimpleObject>();
+
+            var serialized = JsonConvert.SerializeObject(patchDocument);
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ContractResolver = new JsonPatchDocumentResolverForCustomFactory();
+
+            JsonPatchDocument<SimpleObject> deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleObject>>(serialized, serializerSettings);
+
+            // Assert
+            Assert.Equal(typeof(TestAdapterFactory) ,deserialized.AdapterFactory.GetType());
         }
     }
 }

@@ -24,26 +24,25 @@ namespace Microsoft.AspNetCore.JsonPatch
         [JsonIgnore]
         public IContractResolver ContractResolver { get; set; }
 
-        public JsonPatchDocument()
+        /// <summary>
+        /// Gets or sets the AdapterFactory to use when processing this document
+        /// </summary>
+        [JsonIgnore]
+        public IAdapterFactory AdapterFactory { get; set; }
+
+        public JsonPatchDocument():this(new List<Operation>(), new DefaultContractResolver())
         {
-            Operations = new List<Operation>();
-            ContractResolver = new DefaultContractResolver();
         }
 
-        public JsonPatchDocument(List<Operation> operations, IContractResolver contractResolver)
+        public JsonPatchDocument(List<Operation> operations, IContractResolver contractResolver):this(operations, contractResolver, new AdapterFactory())
         {
-            if (operations == null)
-            {
-                throw new ArgumentNullException(nameof(operations));
-            }
+        }
 
-            if (contractResolver == null)
-            {
-                throw new ArgumentNullException(nameof(contractResolver));
-            }
-
-            Operations = operations;
-            ContractResolver = contractResolver;
+        public JsonPatchDocument(List<Operation> operations, IContractResolver contractResolver, IAdapterFactory adapterFactory)
+        {
+            Operations = operations ?? throw new ArgumentNullException(nameof(operations));
+            ContractResolver = contractResolver ?? throw new ArgumentNullException(nameof(contractResolver));
+            AdapterFactory = adapterFactory ?? throw new ArgumentNullException(nameof(adapterFactory));
         }
 
         /// <summary>
@@ -174,7 +173,7 @@ namespace Microsoft.AspNetCore.JsonPatch
                 throw new ArgumentNullException(nameof(objectToApplyTo));
             }
 
-            ApplyTo(objectToApplyTo, new ObjectAdapter(ContractResolver, logErrorAction: null));
+            ApplyTo(objectToApplyTo, new ObjectAdapter(ContractResolver, null, AdapterFactory));
         }
 
         /// <summary>
@@ -189,7 +188,7 @@ namespace Microsoft.AspNetCore.JsonPatch
                 throw new ArgumentNullException(nameof(objectToApplyTo));
             }
 
-            var adapter = new ObjectAdapter(ContractResolver, logErrorAction);
+            var adapter = new ObjectAdapter(ContractResolver, logErrorAction, AdapterFactory);
             foreach (var op in Operations)
             {
                 try
