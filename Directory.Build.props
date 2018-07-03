@@ -1,0 +1,8 @@
+﻿<Project>
+  <Import Project="build\sources.props" />
+  <Import Project="build\dependencies.props" />
+
+  <PropertyGroup>
+    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+  </PropertyGroup>
+</Project>
